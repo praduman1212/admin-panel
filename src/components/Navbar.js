@@ -11,6 +11,7 @@ import {
   FiUser,
   FiChevronDown 
 } from 'react-icons/fi';
+import { RiGraduationCapFill } from 'react-icons/ri';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -38,13 +39,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center">
-              <Image
-                src="/vercel.svg"
-                alt="Logo"
-                width={32}
-                height={32}
-                className="dark:invert"
-              />
+            <RiGraduationCapFill />
               <span className="ml-2 text-xl font-bold text-gray-800 dark:text-[#6B7280]">
                 LMS
               </span>

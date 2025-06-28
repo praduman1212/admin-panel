@@ -52,16 +52,6 @@ const menuItems = [
           { title: 'Categories', href: '/courses/categories' },
         ],
       },
-      {
-        title: 'Students',
-        icon: Users,
-        href: '/students',
-      },
-      {
-        title: 'Teachers',
-        icon: GraduationCap,
-        href: '/teachers',
-      },
     ],
   },
   {

@@ -37,9 +37,9 @@ const Sidebar = () => {
       href: '/course'
     },
     {
-      title: 'Students',
+      title: 'Users',
       icon: <Users className="w-5 h-5" />,
-      href: '/students'
+      href: '/users'
     },
     {
       title: 'Analytics',

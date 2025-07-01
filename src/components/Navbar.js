@@ -68,9 +68,9 @@ const Navbar = () => {
                             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             {mounted && (
-                                theme === 'dark' ?
-                                    <Sun className="h-5 w-5 text-gray-100" /> :
-                                    <Moon className="h-5 w-5 text-gray-600" />
+                                theme === 'dark' 
+                                    ? <Sun className="h-5 w-5 text-gray-600 dark:text-gray-100" />
+                                    : <Moon className="h-5 w-5 text-gray-600 dark:text-gray-100" />
                             )}
                         </button>
 

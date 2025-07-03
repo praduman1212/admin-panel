@@ -1,11 +1,11 @@
 "use client"
 
+import dynamic from 'next/dynamic'
 import { Toaster as Sonner } from "sonner"
 
-const Toaster = () => {
-  return (
+export const Toaster = dynamic(
+  () => Promise.resolve((props) => (
     <Sonner
-    richColors
       className="toaster group"
       toastOptions={{
         classNames: {
@@ -18,8 +18,8 @@ const Toaster = () => {
             "group-[.toast]:bg-gray-100 group-[.toast]:text-gray-500 dark:group-[.toast]:bg-gray-800 dark:group-[.toast]:text-gray-400",
         },
       }}
+      {...props}
     />
-  )
-}
-
-export { Toaster } 
+  )),
+  { ssr: false }
+) 

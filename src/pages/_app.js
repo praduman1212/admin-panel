@@ -9,18 +9,17 @@ export default function App({ Component, pageProps, router }) {
   const isPublicPage = publicPages.includes(router.pathname);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      {isPublicPage ? (
-        <>
+    <>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {isPublicPage ? (
           <Component {...pageProps} />
-          <Toaster />
-        </>
-      ) : (
-        <MainLayout>
-          <Component {...pageProps} />
-          <Toaster />
-        </MainLayout>
-      )}
-    </ThemeProvider>
+        ) : (
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
+        )}
+      </ThemeProvider>
+      <Toaster />
+    </>
   );
 }

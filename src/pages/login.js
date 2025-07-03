@@ -43,7 +43,7 @@ export default function LoginPage() {
             
             // For demo purposes, we're using hardcoded credentials
             if (email === "admin@gmail.com" && password === "admin") {
-                await router.push("/dashboard");
+                await router.push("/");
             } else {
                 alert("Invalid credentials! Please use admin@gmail.com/admin");
             }
@@ -60,7 +60,7 @@ export default function LoginPage() {
         try {
             // Simulate API call delay
             await new Promise(resolve => setTimeout(resolve, 1000));
-            await router.push("/dashboard");
+            await router.push("/");
         } catch (error) {
             console.error("Google sign-in error:", error);
             alert("An error occurred during Google sign-in");

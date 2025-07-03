@@ -116,22 +116,15 @@ const Navbar = () => {
                             {isProfileOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
                                     <Link
-                                        href="/profile"
+                                        href="/settings?tab=profile"
                                         className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     >
                                         <User className="h-4 w-4 mr-2" />
                                         Your Profile
                                     </Link>
-                                    <Link
-                                        href="/settings"
-                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        <Settings className="h-4 w-4 mr-2" />
-                                        Settings
-                                    </Link>
                                     <button
                                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onClick={() => {/* Add logout logic */ }}
+                                        onClick={() => {window.location.href = '/login'}}
                                     >
                                         <LogOut className="h-4 w-4 mr-2" />
                                         Sign out

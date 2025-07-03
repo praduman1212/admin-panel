@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
-import Sidebar from '@/components/SIdebar';
+import Sidebar from '@/components/Layout/Sidebar';
 import CourseCard from '@/components/Coursecard';
 
 // Course generation helper data

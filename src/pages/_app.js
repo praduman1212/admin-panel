@@ -1,23 +1,25 @@
 import '@/styles/globals.css';
 import { ThemeProvider } from 'next-themes';
 import MainLayout from '@/components/Layout/MainLayout';
+import { Toaster } from "@/components/ui/toaster"
 
-export default function App({ Component, pageProps }) {
-  // List of paths that should not use the main layout
-  const noLayoutPaths = ['/login', '/register', '/forgot-password'];
-  
-  // Check if the current path should use the layout
-  const shouldUseLayout = !noLayoutPaths.includes(Component.pathname);
+const publicPages = ['/login']; 
+
+export default function App({ Component, pageProps, router }) {
+  const isPublicPage = publicPages.includes(router.pathname);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      {shouldUseLayout ? (
-        <MainLayout>
+    <>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {isPublicPage ? (
           <Component {...pageProps} />
-        </MainLayout>
-      ) : (
-        <Component {...pageProps} />
-      )}
-    </ThemeProvider>
+        ) : (
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
+        )}
+      </ThemeProvider>
+      <Toaster />
+    </>
   );
 }

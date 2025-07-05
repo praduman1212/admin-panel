@@ -11,19 +11,39 @@ import {
   Menu,
   X,
   Sun,
-  Moon
+  Moon,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '@/context/Auth.context';
+import { toast } from 'sonner';
 
 const Sidebar = () => {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   // Wait until mounted on client-side
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Error logging out');
+    }
+  };
+
+  // Get user's display name or email
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
+  const userPhotoUrl = user?.photoURL;
+  const userEmail = user?.email;
 
   const menuItems = [
     {
@@ -127,20 +147,37 @@ const Sidebar = () => {
 
           {/* User Profile */}
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=50"
-                alt="User"
-                className="w-8 h-8 rounded-full"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  John Smith
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  Administrator
-                </p>
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                {userPhotoUrl ? (
+                  <img
+                    src={userPhotoUrl}
+                    alt={displayName}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                    <span className="text-lg font-medium text-blue-600 dark:text-blue-300">
+                      {displayName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {displayName}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {userEmail}
+                  </p>
+                </div>
               </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </button>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import {
     Search,
     Bell,
@@ -13,12 +14,16 @@ import {
     User,
     GraduationCap
 } from 'lucide-react';
+import { useAuth } from '@/context/Auth.context';
+import { toast } from 'sonner';
 
 const Navbar = () => {
+    const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const { theme, setTheme } = useTheme();
+    const { user, logout } = useAuth();
 
     // Wait for component to mount to avoid hydration mismatch
     useEffect(() => setMounted(true), []);
@@ -29,6 +34,21 @@ const Navbar = () => {
         { id: 3, text: 'Welcome to the dashboard', time: '2h ago' },
     ];
 
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast.success('Logged out successfully');
+            router.push('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+            toast.error('Error logging out');
+        }
+    };
+
+    // Get user's display name or email
+    const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
+    const userPhotoUrl = user?.photoURL;
+
     return (
         <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,7 +58,6 @@ const Navbar = () => {
                         <Link href="/" className="flex items-center">
                             <div className="p-2 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
                                 <GraduationCap className="w-10 h-10 text-white" />
-
                             </div>
                             <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
                                 LMS
@@ -106,25 +125,42 @@ const Navbar = () => {
                                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                                 className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
-                                <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                                    <User className="h-5 w-5 text-gray-600 dark:text-gray-100" />
-                                </div>
+                                {userPhotoUrl ? (
+                                    <img
+                                        src={userPhotoUrl}
+                                        alt={displayName}
+                                        className="h-8 w-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                        <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
+                                            {displayName.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                )}
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {displayName}
+                                </span>
                                 <ChevronDown className="h-4 w-4 text-gray-600 dark:text-gray-100" />
                             </button>
 
                             {/* Profile Menu */}
                             {isProfileOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                                    <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                                        {user?.email}
+                                    </div>
                                     <Link
                                         href="/settings?tab=profile"
                                         className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        onClick={() => setIsProfileOpen(false)}
                                     >
                                         <User className="h-4 w-4 mr-2" />
                                         Your Profile
                                     </Link>
                                     <button
                                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        onClick={() => {window.location.href = '/login'}}
+                                        onClick={handleLogout}
                                     >
                                         <LogOut className="h-4 w-4 mr-2" />
                                         Sign out

@@ -1,5 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -25,11 +24,23 @@ const firebaseConfig = {
   measurementId: "G-SQ45QM3WZL",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Initialize Firebase only if it hasn't been initialized
+let app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Export Firebase services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+// Initialize services
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// Initialize analytics only on client side
+let analytics = null;
+if (typeof window !== 'undefined') {
+    // Dynamically import analytics to avoid SSR issues
+    import('firebase/analytics').then(({ getAnalytics }) => {
+        analytics = getAnalytics(app);
+    }).catch((error) => {
+        console.error('Error loading analytics:', error);
+    });
+}
+
+export { auth, db, storage, analytics };

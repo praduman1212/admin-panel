@@ -1,26 +1,31 @@
 import '@/styles/globals.css';
 import { ThemeProvider } from 'next-themes';
-import MainLayout from '@/components/Layout/MainLayout';
-import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/context/Auth.context';
+import { CourseProvider } from '@/context/Course.context';
+import { Toaster } from 'sonner';
+import MainLayout from '@/components/Layout/MainLayout';
+import { useRouter } from 'next/router';
 
-const publicPages = ['/login', '/signUp']; 
+const publicPages = ['/login', '/signUp'];
 
-export default function App({ Component, pageProps, router }) {
+export default function App({ Component, pageProps }) {
+  const router = useRouter();
   const isPublicPage = publicPages.includes(router.pathname);
 
   return (
-    <AuthProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {isPublicPage ? (
-          <Component {...pageProps} />
-        ) : (
-          <MainLayout>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <AuthProvider>
+        <CourseProvider>
+          {isPublicPage ? (
             <Component {...pageProps} />
-          </MainLayout>
-        )}
-      </ThemeProvider>
-      <Toaster richColors/>
-    </AuthProvider>
+          ) : (
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          )}
+          <Toaster richColors position="top-center" />
+        </CourseProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

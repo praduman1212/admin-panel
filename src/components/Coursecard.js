@@ -1,148 +1,137 @@
 import React from 'react';
-import { 
-  Clock, 
-  Users, 
-  Star, 
-  BookOpen, 
-  BarChart2, 
-  PlayCircle,
-  CheckCircle2,
-  Trophy
-} from 'lucide-react';
-import Image from 'next/image';
+import { Clock, Book, BarChart, Edit2, Trash2, MoreVertical } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useCourse } from '@/context/Course.context';
+import { useAuth } from '@/context/Auth.context';
+import { toast } from 'sonner';
+import { useRouter } from 'next/router';
 
-const CourseCard = ({
-  title = "Course Title",
-  instructor = "Instructor Name",
-  thumbnail,
-  duration = "8 weeks",
-  students = "0",
-  rating = "0.0",
-  level = "Beginner",
-  progress,
-  lessons = "12",
-  category = "Development"
-}) => {
-  // Use a default placeholder image from a reliable source
-  const imageUrl = thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800';
+const CourseCard = ({ course }) => {
+    const { user } = useAuth();
+    const { deleteCourse } = useCourse();
+    const router = useRouter();
+    console.log('Rendering course:', course); 
+    // Ensure course object exists
+    if (!course) {
+        console.error('Course object is undefined or null');
+        return null;
+    }
 
-  // Determine the level badge color
-  const levelColors = {
-    Beginner: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    Intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-    Advanced: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-  };
+    const isOwner = user?.uid === course.instructor_id;
 
-  return (
-    <div className="group bg-white dark:bg-[#232936] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-gray-800">
-      {/* Course Thumbnail */}
-      <div className="relative aspect-video w-full bg-gray-200 dark:bg-gray-800">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          priority={true}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-        
-        {/* Play Button Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="bg-white/90 dark:bg-gray-900/90 p-3 rounded-full transform hover:scale-110 transition-transform">
-            <PlayCircle className="w-6 h-6 text-blue-600 dark:text-blue-500" />
-          </button>
-        </div>
+    // Extract course data with fallbacks
+    const {
+        course_title = 'Untitled Course',
+        course_description = 'No description available',
+        course_category = 'Uncategorized',
+        course_level = 'All Levels',
+        course_duration = 'Not specified',
+        course_lessons = '0',
+        course_price = '0',
+        thumbnail = 'https://via.placeholder.com/400x300?text=Course+Image'
+    } = course;
 
-        {/* Category & Level Badge */}
-        <div className="absolute top-3 left-3 flex gap-2">
-          <span className="px-2 py-1 text-xs font-medium bg-black/50 text-white rounded-lg backdrop-blur-sm">
-            {category}
-          </span>
-          <span className={`px-2 py-1 text-xs font-medium rounded-lg ${levelColors[level]}`}>
-            {level}
-          </span>
-        </div>
+    const handleDelete = async () => {
+        try {
+            if (window.confirm('Are you sure you want to delete this course?')) {
+                await deleteCourse(course.id);
+            }
+        } catch (error) {
+            console.error('Error deleting course:', error);
+        }
+    };
 
-        {/* Progress Badge */}
-        {progress && (
-          <div className="absolute top-3 right-3 px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded-lg">
-            {progress} Complete
-          </div>
-        )}
-      </div>
+    const handleEdit = () => {
+        toast.info('Edit functionality coming soon!');
+    };
 
-      {/* Course Info */}
-      <div className="p-5">
-        <div className="mb-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">
-            {title}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            by {instructor}
-          </p>
-        </div>
+    return (
+        <div
+         onClick={() => router.push(`/course/${course.id}`)}
+         className="group cursor-pointer bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
+            {/* Course Image */}
+            <div className="relative aspect-video w-full overflow-hidden">
+                <img
+                    src={"https://i.pinimg.com/originals/4c/75/fc/4c75fca1cdd8b648fab51ac8aaba6ef9.jpg"}
+                    alt={course_title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Course Status */}
+                <div className="absolute top-3 left-3 flex gap-2">
+                    <span className="px-2 py-1 text-xs font-medium bg-[#39b7f1] backdrop-blur-sm text-white rounded-lg">
+                        {course_category}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-rose-500/75 backdrop-blur-sm text-white rounded-lg">
+                        {course_level}
+                    </span>
+                </div>
 
-        {/* Course Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-          <div className="flex items-center text-gray-600 dark:text-gray-400">
-            <Clock className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" />
-            {duration}
-          </div>
-          <div className="flex items-center text-gray-600 dark:text-gray-400">
-            <BookOpen className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" />
-            {lessons} lessons
-          </div>
-          <div className="flex items-center text-gray-600 dark:text-gray-400">
-            <Users className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" />
-            {students} students
-          </div>
-          <div className="flex items-center text-gray-600 dark:text-gray-400">
-            <Star className="w-4 h-4 mr-2 text-yellow-500" />
-            {rating} rating
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        {progress && (
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600 dark:text-gray-400">Your Progress</span>
-              <span className="text-blue-600 dark:text-blue-500 font-medium">{progress}</span>
+                {/* Course Actions */}
+                {isOwner && (
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="p-1 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors">
+                                <MoreVertical className="w-5 h-5 text-white" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={handleEdit}>
+                                    <Edit2 className="w-4 h-4 mr-2" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                    onClick={handleDelete}
+                                    className="text-red-600 dark:text-red-400"
+                                >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                )}
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: progress }}
-              />
-            </div>
-          </div>
-        )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-            {progress ? (
-              <>
-                <PlayCircle className="w-4 h-4" />
-                <span>Continue</span>
-              </>
-            ) : (
-              <>
-                <BookOpen className="w-4 h-4" />
-                <span>Start Course</span>
-              </>
-            )}
-          </button>
-          {progress && (
-            <button className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <BarChart2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
-          )}
+            {/* Course Content */}
+            <div className="flex flex-col flex-grow p-4">
+                <div className="flex-grow">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {course_title}
+                    </h3>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                        {course_description}
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-gray-400" />
+                            <span>{course_duration}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Book className="w-4 h-4 text-gray-400" />
+                            <span>{course_lessons} lessons</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        ${course_price}
+                    </span>
+                    <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default CourseCard;

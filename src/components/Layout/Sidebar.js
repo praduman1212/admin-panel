@@ -1,160 +1,102 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useTheme } from 'next-themes';
-import {
-  Layout,
-  BookOpen,
-  Users,
-  BarChart2,
-  Settings,
-  Menu,
-  X,
-  Sun,
-  Moon
-} from 'lucide-react';
+import { LayoutDashboard, BookOpen, Users, BarChart2, Settings } from 'lucide-react';
+import { useAuth } from '@/context/Auth.context';
 
 const Sidebar = () => {
-  const router = useRouter();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const router = useRouter();
+    const { user, logout } = useAuth();
 
-  // Wait until mounted on client-side
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+    const navigation = [
+        {
+            name: 'Dashboard',
+            href: '/dashboard',
+            icon: LayoutDashboard
+        },
+        {
+            name: 'Courses',
+            href: '/course',
+            icon: BookOpen
+        },
+        {
+            name: 'Users',
+            href: '/users',
+            icon: Users
+        },
+        {
+            name: 'Analytics',
+            href: '/analytics',
+            icon: BarChart2
+        },
+        {
+            name: 'Settings',
+            href: '/settings',
+            icon: Settings
+        }
+    ];
 
-  const menuItems = [
-    {
-      title: 'Dashboard',
-      icon: <Layout className="w-5 h-5" />,
-      href: '/'
-    },
-    {
-      title: 'Courses',
-      icon: <BookOpen className="w-5 h-5" />,
-      href: '/course'
-    },
-    {
-      title: 'Users',
-      icon: <Users className="w-5 h-5" />,
-      href: '/users'
-    },
-    {
-      title: 'Analytics',
-      icon: <BarChart2 className="w-5 h-5" />,
-      href: '/analytics'
-    },
-    {
-      title: 'Settings',
-      icon: <Settings className="w-5 h-5" />,
-      href: '/settings'
-    }
-  ];
+    const isActive = (path) => router.pathname === path;
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+    return (
+        <aside className="fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-30">
+            <div className="flex flex-col h-full">
+                {/* Navigation Links */}
+                <nav className="flex-1 px-3 py-4 space-y-1">
+                    {navigation.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    isActive(item.href)
+                                        ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-500'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                <Icon className="w-5 h-5 mr-3" />
+                                {item.name}
+                            </Link>
+                        );
+                    })}
+                </nav>
 
-  return (
-    <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md"
-      >
-        {isMobileMenuOpen ? (
-          <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-        ) : (
-          <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-        )}
-      </button>
-
-      {/* Sidebar */}
-      <aside
-        className={`
-          fixed top-0 left-0 z-40 h-screen transition-transform
-          lg:translate-x-0 lg:w-64
-          ${isMobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full'}
-        `}
-      >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-          {/* Logo */}
-          <div className="flex items-center justify-between mb-6 px-2">
-            <Link href="/" className="flex items-center">
-              <span className="text-xl font-semibold text-gray-800 dark:text-white">
-                LMS Admin
-              </span>
-            </Link>
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              {mounted && (
-                theme === 'dark' ? (
-                  <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                ) : (
-                  <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                )
-              )}
-            </button>
-          </div>
-
-          {/* Navigation */}
-          <nav className="space-y-1">
-            {menuItems.map((item) => {
-              const isActive = router.pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors
-                    ${
-                      isActive
-                        ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-500'
-                        : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                    }
-                  `}
-                >
-                  {item.icon}
-                  <span className="ml-3">{item.title}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* User Profile */}
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=50"
-                alt="User"
-                className="w-8 h-8 rounded-full"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  John Smith
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  Administrator
-                </p>
-              </div>
+                {/* User Profile Section */}
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                            {user?.photoURL ? (
+                                <img
+                                    src={user.photoURL}
+                                    alt={user.displayName || 'User'}
+                                    className="w-8 h-8 rounded-full"
+                                />
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                                    {user?.displayName?.[0] || user?.email?.[0] || 'U'}
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {user?.displayName || 'User'}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {user?.email}
+                            </p>
+                        </div>
+                        <button
+                            onClick={logout}
+                            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-gray-900/50 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-    </>
-  );
+        </aside>
+    );
 };
 
 export default Sidebar;

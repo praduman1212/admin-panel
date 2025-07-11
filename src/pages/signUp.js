@@ -10,25 +10,27 @@ import {
     ArrowRight,
     Users,
     BarChart3,
-    Shield,
-    Settings,
     Sun,
     Moon,
     Award,
     BookOpen,
-    GraduationCap
+    GraduationCap,
+    User,
+    Phone
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/Auth.context";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+export default function SignUpPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const { isLoading, login, signInWithGoogle } = useAuth();
+    const { isLoading, signUp, signInWithGoogle } = useAuth();
     const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
 
@@ -37,6 +39,10 @@ export default function LoginPage() {
     }, []);
 
     const validateForm = () => {
+        if (!name.trim()) {
+            toast.error("Please enter your name");
+            return false;
+        }
         if (!email.trim()) {
             toast.error("Please enter your email");
             return false;
@@ -45,8 +51,20 @@ export default function LoginPage() {
             toast.error("Please enter a valid email address");
             return false;
         }
+        if (!phone.trim()) {
+            toast.error("Please enter your phone number");
+            return false;
+        }
+        if (phone.length < 10) {
+            toast.error("Please enter a valid phone number");
+            return false;
+        }
         if (!password) {
-            toast.error("Please enter your password");
+            toast.error("Please enter a password");
+            return false;
+        }
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters long");
             return false;
         }
         return true;
@@ -58,27 +76,24 @@ export default function LoginPage() {
         if (!validateForm()) return;
 
         try {
-            await login(email, password);
-            toast.success("Welcome back!");
-            router.push("/");
+            await signUp(email, password, name);
+            toast.success("Account created successfully! Please log in.");
+            router.push("/login");
         } catch (error) {
-            console.error("Login error:", error);
+            console.error("Signup error:", error);
             // Handle specific Firebase error codes
             switch (error.code) {
-                case 'auth/user-not-found':
-                    toast.error("No account found with this email. Please sign up.");
-                    break;
-                case 'auth/wrong-password':
-                    toast.error("Incorrect password. Please try again.");
+                case 'auth/email-already-in-use':
+                    toast.error("This email is already registered. Please log in instead.");
                     break;
                 case 'auth/invalid-email':
                     toast.error("Please enter a valid email address.");
                     break;
-                case 'auth/too-many-requests':
-                    toast.error("Too many failed attempts. Please try again later.");
+                case 'auth/weak-password':
+                    toast.error("Password is too weak. Please use a stronger password.");
                     break;
                 default:
-                    toast.error(error.message || "Error logging in. Please try again.");
+                    toast.error(error.message || "Error creating account. Please try again.");
             }
         }
     };
@@ -86,7 +101,7 @@ export default function LoginPage() {
     const handleGoogleSignIn = async () => {
         try {
             await signInWithGoogle();
-            toast.success("Welcome back!");
+            toast.success("Signed in successfully!");
             router.push("/");
         } catch (error) {
             console.error("Google sign-in error:", error);
@@ -115,7 +130,6 @@ export default function LoginPage() {
                     <Moon className="w-5 h-5" />
                 )}
             </button>
-
             <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Left Side - Features */}
                 <motion.div
@@ -140,10 +154,10 @@ export default function LoginPage() {
 
                     <div className="space-y-6">
                         <h2 className="text-4xl font-bold text-gray-900 dark:text-white leading-tight">
-                            Welcome Back!
+                            Transform Your Learning Journey
                         </h2>
                         <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Continue your learning journey with our comprehensive
+                            Join thousands of learners and educators in our comprehensive
                             learning management system.
                         </p>
                     </div>
@@ -185,10 +199,10 @@ export default function LoginPage() {
                     <div className="bg-white dark:bg-[#232936] rounded-2xl p-8 shadow-lg dark:shadow-none backdrop-blur-sm">
                         <div className="mb-8">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
-                                Welcome Back
+                                Create an Account
                             </h3>
                             <p className="mt-2 text-center text-gray-600 dark:text-gray-400">
-                                Sign in to your account
+                                Join our learning community today
                             </p>
                         </div>
 
@@ -235,6 +249,18 @@ export default function LoginPage() {
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="relative">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                    required
+                                />
+                            </div>
+
+                            <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input
                                     type="email"
@@ -247,10 +273,22 @@ export default function LoginPage() {
                             </div>
 
                             <div className="relative">
+                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="tel"
+                                    placeholder="Phone Number"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                    required
+                                />
+                            </div>
+
+                            <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Password"
+                                    placeholder="Password (min. 6 characters)"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
@@ -278,19 +316,19 @@ export default function LoginPage() {
                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        <span>Sign In</span>
+                                        <span>Create Account</span>
                                         <ArrowRight className="w-5 h-5" />
                                     </>
                                 )}
                             </button>
 
                             <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
-                                Don't have an account?{" "}
+                                Already have an account?{" "}
                                 <Link
-                                    href="/signUp"
+                                    href="/login"
                                     className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium"
                                 >
-                                    Sign up
+                                    Sign in
                                 </Link>
                             </p>
                         </form>

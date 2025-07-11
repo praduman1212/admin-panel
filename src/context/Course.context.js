@@ -23,12 +23,12 @@ export function CourseProvider({ children }) {
     // Create a new course
     const createCourse = async (courseData) => {
         if (!user) throw new Error('User must be authenticated');
-        
         setIsLoading(true);
         try {
-            // Add course to Firestore
-            const courseRef = await addDoc(collection(db, 'courses'), {
-                course_id: String(Date.now()), // Generate a unique course ID
+            // Compose all fields for Firestore
+            const fullCourseData = {
+                // Legacy/required fields for compatibility
+                course_id: String(Date.now()),
                 course_title: courseData.title,
                 course_description: courseData.description,
                 course_price: courseData.price,
@@ -40,9 +40,31 @@ export function CourseProvider({ children }) {
                 instructor_name: user.displayName || user.email,
                 created_at: serverTimestamp(),
                 updated_at: serverTimestamp(),
-                status: 'active'
-            });
+                status: courseData.status || 'active',
 
+                // All extra fields from the form
+                subcategory: courseData.subcategory || '',
+                originalPrice: courseData.originalPrice || '',
+                shortDescription: courseData.shortDescription || '',
+                metaTitle: courseData.metaTitle || '',
+                metaDescription: courseData.metaDescription || '',
+                language: courseData.language || 'en',
+                features: courseData.features || {},
+                requirements: courseData.requirements || [],
+                learningOutcomes: courseData.learningOutcomes || [],
+                tags: courseData.tags || [],
+                totalQuizzes: courseData.totalQuizzes || 0,
+                totalAssignments: courseData.totalAssignments || 0,
+                totalDuration: courseData.totalDuration || 0,
+                instructorImage: courseData.instructorImage || '',
+                thumbnail: courseData.thumbnail || '',
+                isFeatured: courseData.isFeatured || false,
+                isBestseller: courseData.isBestseller || false,
+                isFree: courseData.isFree || false,
+                lastUpdated: courseData.lastUpdated || serverTimestamp(),
+            };
+            // Add course to Firestore
+            const courseRef = await addDoc(collection(db, 'courses'), fullCourseData);
             toast.success('Course created successfully!');
             return courseRef.id;
         } catch (error) {
@@ -111,19 +133,9 @@ export function CourseProvider({ children }) {
             
             const courses = querySnapshot.docs.map(doc => {
                 const data = doc.data();
-                console.log('Course data from Firestore:', data); // Debug log
                 return {
                     id: doc.id,
-                    ...data,
-                    // Ensure all required fields have default values
-                    course_title: data.course_title || data.title || 'Untitled Course',
-                    course_description: data.course_description || data.description || 'No description available',
-                    course_category: data.course_category || data.category || 'Uncategorized',
-                    course_level: data.course_level || data.level || 'All Levels',
-                    course_duration: data.course_duration || data.duration || 'Not specified',
-                    course_lessons: data.course_lessons || data.lessons || '0',
-                    course_price: data.course_price || data.price || '0',
-                    status: data.status || 'active'
+                    ...data
                 };
             });
 
@@ -215,4 +227,4 @@ export const useCourse = () => {
         throw new Error('useCourse must be used within a CourseProvider');
     }
     return context;
-}; 
+};

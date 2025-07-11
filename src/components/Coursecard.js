@@ -9,13 +9,13 @@ import {
 import { useCourse } from '@/context/Course.context';
 import { useAuth } from '@/context/Auth.context';
 import { toast } from 'sonner';
+import { useRouter } from 'next/router';
 
 const CourseCard = ({ course }) => {
     const { user } = useAuth();
     const { deleteCourse } = useCourse();
-    
-    console.log('Rendering course:', course); // Debug log
-
+    const router = useRouter();
+    console.log('Rendering course:', course); 
     // Ensure course object exists
     if (!course) {
         console.error('Course object is undefined or null');
@@ -51,7 +51,9 @@ const CourseCard = ({ course }) => {
     };
 
     return (
-        <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
+        <div
+         onClick={() => router.push(`/course/${course.id}`)}
+         className="group cursor-pointer bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col h-full">
             {/* Course Image */}
             <div className="relative aspect-video w-full overflow-hidden">
                 <img
@@ -63,10 +65,10 @@ const CourseCard = ({ course }) => {
                 
                 {/* Course Status */}
                 <div className="absolute top-3 left-3 flex gap-2">
-                    <span className="px-2 py-1 text-xs font-medium bg-white/10 backdrop-blur-sm text-white rounded-lg">
+                    <span className="px-2 py-1 text-xs font-medium bg-[#39b7f1] backdrop-blur-sm text-white rounded-lg">
                         {course_category}
                     </span>
-                    <span className="px-2 py-1 text-xs font-medium bg-white/10 backdrop-blur-sm text-white rounded-lg">
+                    <span className="px-2 py-1 text-xs font-medium bg-rose-500/75 backdrop-blur-sm text-white rounded-lg">
                         {course_level}
                     </span>
                 </div>

@@ -59,18 +59,18 @@ const Navbar = () => {
                             {user?.photoURL ? (
                                 <img
                                     src={user.photoURL}
-                                    alt={user.displayName || 'User'}
+                                    alt={user.name || 'User'}
                                     className="w-8 h-8 rounded-full"
                                 />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                                    {user?.displayName?.[0] || user?.email?.[0] || 'U'}
+                                    {user?.name?.[0] || user?.email?.[0] || 'U'}
                                 </div>
                             )}
                         </div>
                         <div className="hidden md:block">
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {user?.displayName || 'User'}
+                                {user?.name || 'User'}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                                 {user?.email}

@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { Sun, Moon, User, Shield, Settings, Eye, Lock, Mail, UserCircle, Palette, Monitor, Smartphone } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
+import { useAuth } from "@/context/Auth.context";
+import { useEffect } from "react";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -18,14 +20,34 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
   
+  const { user, updateUserProfile, isLoading: authLoading } = useAuth();
+
   const [formData, setFormData] = useState({
-    name: "John Smith",
-    email: "john@example.com",
-    role: "Administrator",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=50",
-    joinDate: "January 2023",
-    lastLogin: "2 hours ago"
+    name: "",
+    email: "",
+    role: "",
+    avatar: "",
+    joinDate: "",
+    lastLogin: ""
   });
+
+  // When user changes, update formData
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        role: user.role || "",
+        avatar: user.photoURL || "",
+        joinDate: user.createdAt
+          ? new Date(user.createdAt.seconds ? user.createdAt.seconds * 1000 : user.createdAt).toLocaleDateString()
+          : "",
+        lastLogin: user.lastLogin
+          ? new Date(user.lastLogin.seconds ? user.lastLogin.seconds * 1000 : user.lastLogin).toLocaleString()
+          : ""
+      });
+    }
+  }, [user]);
 
   const handleTabChange = (value) => {
     setActiveTab(value);
@@ -40,14 +62,16 @@ export default function SettingsPage() {
 
   const handleProfileUpdate = async () => {
     setIsLoading(true);
-    toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 1000)),
-      {
-        loading: 'Updating profile...',
-        success: 'Profile updated successfully!',
-        error: 'Failed to update profile',
-      }
-    );
+    try {
+      await updateUserProfile({
+        name: formData.name,
+        email: formData.email,
+        // add other fields as needed
+      });
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update profile");
+    }
     setIsLoading(false);
   };
 

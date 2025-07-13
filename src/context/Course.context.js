@@ -25,46 +25,21 @@ export function CourseProvider({ children }) {
         if (!user) throw new Error('User must be authenticated');
         setIsLoading(true);
         try {
-            // Compose all fields for Firestore
-            const fullCourseData = {
-                // Legacy/required fields for compatibility
-                course_id: String(Date.now()),
-                course_title: courseData.title,
-                course_description: courseData.description,
-                course_price: courseData.price,
-                course_duration: courseData.duration,
-                course_level: courseData.level,
-                course_category: courseData.category,
-                course_lessons: courseData.lessons || [],
-                instructor_id: user.uid,
-                instructor_name: user.displayName || user.email,
-                created_at: serverTimestamp(),
-                updated_at: serverTimestamp(),
-                status: courseData.status || 'active',
-
-                // All extra fields from the form
-                subcategory: courseData.subcategory || '',
-                originalPrice: courseData.originalPrice || '',
-                shortDescription: courseData.shortDescription || '',
-                metaTitle: courseData.metaTitle || '',
-                metaDescription: courseData.metaDescription || '',
-                language: courseData.language || 'en',
-                features: courseData.features || {},
-                requirements: courseData.requirements || [],
-                learningOutcomes: courseData.learningOutcomes || [],
-                tags: courseData.tags || [],
-                totalQuizzes: courseData.totalQuizzes || 0,
-                totalAssignments: courseData.totalAssignments || 0,
-                totalDuration: courseData.totalDuration || 0,
-                instructorImage: courseData.instructorImage || '',
-                thumbnail: courseData.thumbnail || '',
-                isFeatured: courseData.isFeatured || false,
-                isBestseller: courseData.isBestseller || false,
-                isFree: courseData.isFree || false,
-                lastUpdated: courseData.lastUpdated || serverTimestamp(),
+            // Only use the specified fields
+            const newCourse = {
+                'course-assignments': courseData['course-assignments'] || '',
+                'course-category': courseData['course-category'] || '',
+                'course-description': courseData['course-description'] || '',
+                'course-duration': courseData['course-duration'] || '',
+                'course-instructor': courseData['course-instructor'] || '',
+                'course-lessons': courseData['course-lessons'] || [],
+                'course-price': courseData['course-price'] || '',
+                'course-quizess': courseData['course-quizess'] || [],
+                'course-thumbnailUrl': courseData['course-thumbnailUrl'] || '',
+                'course-title': courseData['course-title'] || '',
             };
-            // Add course to Firestore
-            const courseRef = await addDoc(collection(db, 'courses'), fullCourseData);
+            // Add course to 'ncourse' collection
+            const courseRef = await addDoc(collection(db, 'ncourse'), newCourse);
             toast.success('Course created successfully!');
             return courseRef.id;
         } catch (error) {
@@ -128,20 +103,25 @@ export function CourseProvider({ children }) {
     // Get all courses
     const getAllCourses = async () => {
         try {
-            const coursesRef = collection(db, 'courses');
+            const coursesRef = collection(db, 'ncourse');
             const querySnapshot = await getDocs(coursesRef);
-            
             const courses = querySnapshot.docs.map(doc => {
                 const data = doc.data();
                 return {
                     id: doc.id,
-                    ...data
+                    'course-assignments': data['course-assignments'] || '',
+                    'course-category': data['course-category'] || '',
+                    'course-description': data['course-description'] || '',
+                    'course-duration': data['course-duration'] || '',
+                    'course-instructor': data['course-instructor'] || '',
+                    'course-lessons': data['course-lessons'] || [],
+                    'course-price': data['course-price'] || '',
+                    'course-quizess': data['course-quizess'] || [],
+                    'course-thumbnailUrl': data['course-thumbnailUrl'] || '',
+                    'course-title': data['course-title'] || '',
                 };
             });
-
-            console.log('Processed courses:', courses); // Debug log
             return courses;
-            
         } catch (error) {
             console.error('Error fetching courses:', error);
             toast.error('Failed to fetch courses');

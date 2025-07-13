@@ -15,39 +15,16 @@ const Course = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
-        title: '',
-        category: '',
-        subcategory: '',
-        level: 'Beginner',
-        duration: '',
-        lessons: '',
-        price: '',
-        originalPrice: '',
-        description: '',
-        shortDescription: '',
-        metaTitle: '',
-        metaDescription: '',
-        language: 'en',
-        features: {
-            assignments: false,
-            quizzes: false,
-            certificate: false,
-            downloadableContent: false,
-            lifetimeAccess: false,
-            mobileAccess: false
-        },
-        requirements: [],
-        learningOutcomes: [],
-        tags: [],
-        totalQuizzes: 0,
-        totalAssignments: 0,
-        totalDuration: 0,
-        instructorName: '',
-        instructorImage: '',
-        thumbnail: '',
-        isFeatured: false,
-        isBestseller: false,
-        isFree: false
+        'course-title': '',
+        'course-category': '',
+        'course-description': '',
+        'course-duration': '',
+        'course-instructor': '',
+        'course-lessons': '',
+        'course-assignments': '',
+        'course-quizess': '',
+        'course-price': '',
+        'course-thumbnailUrl': '',
     });
 
     // Fetch courses when component mounts
@@ -82,11 +59,11 @@ const Course = () => {
             return;
         }
 
-        if (!formData.title.trim()) {
+        if (!formData['course-title'].trim()) {
             toast.error('Course title is required');
             return;
         }
-        if (!formData.category.trim()) {
+        if (!formData['course-category'].trim()) {
             toast.error('Category is required');
             return;
         }
@@ -95,36 +72,16 @@ const Course = () => {
         try {
             // Create course with all available fields
             await createCourse({
-                title: formData.title,
-                description: formData.description,
-                shortDescription: formData.shortDescription,
-                category: formData.category,
-                subcategory: formData.subcategory,
-                level: formData.level,
-                duration: formData.duration,
-                lessons: formData.lessons,
-                price: parseFloat(formData.price) || 0,
-                originalPrice: parseFloat(formData.originalPrice) || 0,
-                metaTitle: formData.metaTitle || formData.title,
-                metaDescription: formData.metaDescription || formData.description,
-                language: formData.language,
-                features: formData.features,
-                requirements: formData.requirements,
-                learningOutcomes: formData.learningOutcomes,
-                tags: formData.tags,
-                totalQuizzes: parseInt(formData.totalQuizzes) || 0,
-                totalAssignments: parseInt(formData.totalAssignments) || 0,
-                totalDuration: parseInt(formData.totalDuration) || 0,
-                instructorName: formData.instructorName,
-                instructorImage: formData.instructorImage,
-                thumbnail: formData.thumbnail,
-                isFeatured: formData.isFeatured,
-                isBestseller: formData.isBestseller,
-                isFree: formData.isFree,
-                status: 'draft',
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                lastUpdated: new Date()
+                'course-title': formData['course-title'],
+                'course-category': formData['course-category'],
+                'course-description': formData['course-description'],
+                'course-duration': formData['course-duration'],
+                'course-instructor': formData['course-instructor'],
+                'course-lessons': formData['course-lessons'],
+                'course-assignments': formData['course-assignments'],
+                'course-quizess': formData['course-quizess'],
+                'course-price': formData['course-price'],
+                'course-thumbnailUrl': formData['course-thumbnailUrl'],
             });
 
             // Refresh courses list after creating new course
@@ -143,39 +100,16 @@ const Course = () => {
 
     const resetForm = () => {
         setFormData({
-            title: '',
-            category: '',
-            subcategory: '',
-            level: 'Beginner',
-            duration: '',
-            lessons: '',
-            price: '',
-            originalPrice: '',
-            description: '',
-            shortDescription: '',
-            metaTitle: '',
-            metaDescription: '',
-            language: 'en',
-            features: {
-                assignments: false,
-                quizzes: false,
-                certificate: false,
-                downloadableContent: false,
-                lifetimeAccess: false,
-                mobileAccess: false
-            },
-            requirements: [],
-            learningOutcomes: [],
-            tags: [],
-            totalQuizzes: 0,
-            totalAssignments: 0,
-            totalDuration: 0,
-            instructorName: '',
-            instructorImage: '',
-            thumbnail: '',
-            isFeatured: false,
-            isBestseller: false,
-            isFree: false
+            'course-title': '',
+            'course-category': '',
+            'course-description': '',
+            'course-duration': '',
+            'course-instructor': '',
+            'course-lessons': '',
+            'course-assignments': '',
+            'course-quizess': '',
+            'course-price': '',
+            'course-thumbnailUrl': '',
         });
     };
 
@@ -186,16 +120,15 @@ const Course = () => {
 
     // Filter courses by search term
     const filteredCourses = courses?.filter(course => {
-        console.log('Processing course:', course); // Debug log for each course
-        const matchesSearch = course.course_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            course.course_category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            course.course_description?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (course['course-title'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (course['course-category'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (course['course-description'] || '').toLowerCase().includes(searchTerm.toLowerCase());
         return matchesSearch;
     }) || [];
 
-    // Update status filtering to match API values
-    const inProgressCourses = filteredCourses.filter(course => course.status === 'pending' || course.status === 'draft');
-    const availableCourses = filteredCourses.filter(course => course.status === 'active' || course.status === 'published');
+    // For now, treat all as available (no status field)
+    const availableCourses = filteredCourses;
+    const inProgressCourses = [];
     console.log('Available courses:', availableCourses); // Debug log for available courses
 
     return (
@@ -349,8 +282,8 @@ const Course = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="title"
-                                        value={formData.title}
+                                        name="course-title"
+                                        value={formData['course-title']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="Enter course title"
@@ -363,8 +296,8 @@ const Course = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="category"
-                                        value={formData.category}
+                                        name="course-category"
+                                        value={formData['course-category']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="e.g., Web Development"
@@ -373,46 +306,16 @@ const Course = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Subcategory
+                                        Description
                                     </label>
-                                    <input
-                                        type="text"
-                                        name="subcategory"
-                                        value={formData.subcategory}
+                                    <textarea
+                                        name="course-description"
+                                        value={formData['course-description']}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="e.g., React.js"
+                                        rows="4"
+                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                                        placeholder="Detailed course description..."
                                     />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Level
-                                    </label>
-                                    <select
-                                        name="level"
-                                        value={formData.level}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                    >
-                                        <option value="Beginner">Beginner</option>
-                                        <option value="Intermediate">Intermediate</option>
-                                        <option value="Advanced">Advanced</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Language
-                                    </label>
-                                    <select
-                                        name="language"
-                                        value={formData.language}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                    >
-                                        <option value="en">English</option>
-                                        <option value="es">Spanish</option>
-                                        <option value="fr">French</option>
-                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -420,33 +323,34 @@ const Course = () => {
                                     </label>
                                     <input
                                         type="number"
-                                        name="totalDuration"
-                                        value={formData.totalDuration}
+                                        name="course-duration"
+                                        value={formData['course-duration']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="120"
                                     />
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Course Content Section */}
-                        <div>
-                            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                                    <span className="text-green-600 dark:text-green-400 font-semibold text-sm">2</span>
-                                </div>
-                                Course Content
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Number of Lessons
+                                        Instructor
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="course-instructor"
+                                        value={formData['course-instructor']}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        placeholder="John Doe"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Lessons
                                     </label>
                                     <input
                                         type="number"
-                                        name="lessons"
-                                        value={formData.lessons}
+                                        name="course-lessons"
+                                        value={formData['course-lessons']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="10"
@@ -454,28 +358,28 @@ const Course = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Total Quizzes
+                                        Assignments
                                     </label>
                                     <input
                                         type="number"
-                                        name="totalQuizzes"
-                                        value={formData.totalQuizzes}
+                                        name="course-assignments"
+                                        value={formData['course-assignments']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="5"
+                                        placeholder="3"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Total Assignments
+                                        Quizzes
                                     </label>
                                     <input
                                         type="number"
-                                        name="totalAssignments"
-                                        value={formData.totalAssignments}
+                                        name="course-quizess"
+                                        value={formData['course-quizess']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="3"
+                                        placeholder="5"
                                     />
                                 </div>
                                 <div>
@@ -485,182 +389,25 @@ const Course = () => {
                                     <input
                                         type="number"
                                         step="0.01"
-                                        name="price"
-                                        value={formData.price}
+                                        name="course-price"
+                                        value={formData['course-price']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="99.99"
                                     />
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Descriptions Section */}
-                        <div>
-                            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
-                                    <span className="text-purple-600 dark:text-purple-400 font-semibold text-sm">3</span>
-                                </div>
-                                Descriptions
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Short Description
-                                    </label>
-                                    <textarea
-                                        name="shortDescription"
-                                        value={formData.shortDescription}
-                                        onChange={handleInputChange}
-                                        rows="4"
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-                                        placeholder="A brief overview of what students will learn..."
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Full Description
-                                    </label>
-                                    <textarea
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleInputChange}
-                                        rows="4"
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-                                        placeholder="Detailed course description..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Instructor & Media Section */}
-                        <div>
-                            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-                                    <span className="text-orange-600 dark:text-orange-400 font-semibold text-sm">4</span>
-                                </div>
-                                Instructor & Media
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Instructor Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="instructorName"
-                                        value={formData.instructorName}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Instructor Image URL
+                                        Thumbnail URL
                                     </label>
                                     <input
                                         type="url"
-                                        name="instructorImage"
-                                        value={formData.instructorImage}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="https://example.com/instructor.jpg"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Course Thumbnail URL
-                                    </label>
-                                    <input
-                                        type="url"
-                                        name="thumbnail"
-                                        value={formData.thumbnail}
+                                        name="course-thumbnailUrl"
+                                        value={formData['course-thumbnailUrl']}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="https://example.com/thumbnail.jpg"
                                     />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Course Features Section */}
-                        <div>
-                            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
-                                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">5</span>
-                                </div>
-                                Course Features
-                            </h4>
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                    {Object.keys(formData.features).map((feature) => (
-                                        <label key={feature} className="flex items-center space-x-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                name={feature}
-                                                checked={formData.features[feature]}
-                                                onChange={e => setFormData(prev => ({
-                                                    ...prev,
-                                                    features: { ...prev.features, [feature]: e.target.checked }
-                                                }))}
-                                                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                            />
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                {feature.replace(/([A-Z])/g, ' $1').toLowerCase().replace(/^./, str => str.toUpperCase())}
-                                            </span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Course Settings Section */}
-                        <div>
-                            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <div className="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                                    <span className="text-red-600 dark:text-red-400 font-semibold text-sm">6</span>
-                                </div>
-                                Course Settings
-                            </h4>
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <label className="flex items-center space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            name="isFeatured"
-                                            checked={formData.isFeatured}
-                                            onChange={e => setFormData(prev => ({ ...prev, isFeatured: e.target.checked }))}
-                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Featured Course
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            name="isBestseller"
-                                            checked={formData.isBestseller}
-                                            onChange={e => setFormData(prev => ({ ...prev, isBestseller: e.target.checked }))}
-                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Bestseller
-                                        </span>
-                                    </label>
-                                    <label className="flex items-center space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            name="isFree"
-                                            checked={formData.isFree}
-                                            onChange={e => setFormData(prev => ({ ...prev, isFree: e.target.checked }))}
-                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                        />
-                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Free Course
-                                        </span>
-                                    </label>
                                 </div>
                             </div>
                         </div>

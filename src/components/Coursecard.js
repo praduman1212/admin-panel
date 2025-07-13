@@ -24,17 +24,34 @@ const CourseCard = ({ course }) => {
 
     const isOwner = user?.uid === course.instructor_id;
 
-    // Extract course data with fallbacks
+    // Extract course data with support for both new and legacy field names
     const {
-        course_title = 'Untitled Course',
-        course_description = 'No description available',
-        course_category = 'Uncategorized',
-        course_level = 'All Levels',
-        course_duration = 'Not specified',
-        course_lessons = '0',
-        course_price = '0',
-        thumbnail = 'https://via.placeholder.com/400x300?text=Course+Image'
+        // New field names
+        ['course-title']: courseTitle,
+        ['course-description']: courseDescription,
+        ['course-category']: courseCategory,
+        ['course-duration']: courseDuration,
+        ['course-lessons']: courseLessons,
+        ['course-price']: coursePrice,
+        ['course-thumbnailUrl']: courseThumbnailUrl,
+        // Legacy field names as fallback
+        course_title,
+        course_description,
+        course_category,
+        course_duration,
+        course_lessons,
+        course_price,
+        thumbnail
     } = course;
+
+    // Use new fields if present, otherwise fallback to legacy
+    const displayTitle = courseTitle || course_title || 'Untitled Course';
+    const displayDescription = courseDescription || course_description || 'No description available';
+    const displayCategory = courseCategory || course_category || 'Uncategorized';
+    const displayDuration = courseDuration || course_duration || 'Not specified';
+    const displayLessons = courseLessons || course_lessons || '0';
+    const displayPrice = coursePrice || course_price || '0';
+    const displayThumbnail = courseThumbnailUrl || thumbnail || 'https://via.placeholder.com/400x300?text=Course+Image';
 
     const handleDelete = async () => {
         try {
@@ -57,8 +74,8 @@ const CourseCard = ({ course }) => {
             {/* Course Image */}
             <div className="relative aspect-video w-full overflow-hidden">
                 <img
-                    src={"https://i.pinimg.com/originals/4c/75/fc/4c75fca1cdd8b648fab51ac8aaba6ef9.jpg"}
-                    alt={course_title}
+                    src={displayThumbnail}
+                    alt={displayTitle}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -66,10 +83,10 @@ const CourseCard = ({ course }) => {
                 {/* Course Status */}
                 <div className="absolute top-3 left-3 flex gap-2">
                     <span className="px-2 py-1 text-xs font-medium bg-[#39b7f1] backdrop-blur-sm text-white rounded-lg">
-                        {course_category}
+                        {displayCategory}
                     </span>
                     <span className="px-2 py-1 text-xs font-medium bg-rose-500/75 backdrop-blur-sm text-white rounded-lg">
-                        {course_level}
+                        All Levels
                     </span>
                 </div>
 
@@ -102,28 +119,28 @@ const CourseCard = ({ course }) => {
             <div className="flex flex-col flex-grow p-4">
                 <div className="flex-grow">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {course_title}
+                        {displayTitle}
                     </h3>
 
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                        {course_description}
+                        {displayDescription}
                     </p>
 
                     <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-gray-400" />
-                            <span>{course_duration}</span>
+                            <span>{displayDuration}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Book className="w-4 h-4 text-gray-400" />
-                            <span>{course_lessons} lessons</span>
+                            <span>{displayLessons} lessons</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        ${course_price}
+                        ${displayPrice}
                     </span>
                     <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
                         Enroll Now

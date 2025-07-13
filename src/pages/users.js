@@ -1,4 +1,6 @@
-import { useState } from "react"
+import { useEffect, useState } from "react";
+import { db } from "@/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 import {
   flexRender,
@@ -13,77 +15,42 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+
 import { Input } from "@/components/ui/input"
 import { Search, Plus, MoreHorizontal, ArrowUpDown } from "lucide-react"
-
-const data = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "Student",
-    status: "active",
-    joinedDate: "2024-01-15",
-    coursesEnrolled: "3",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "Instructor",
-    status: "active",
-    joinedDate: "2024-01-10",
-    coursesEnrolled: "0",
-  },
-  {
-    id: "3",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    role: "Student",
-    status: "inactive",
-    joinedDate: "2024-01-20",
-    coursesEnrolled: "2",
-  },
-  {
-    id: "4",
-    name: "Bob Wilson",
-    email: "bob@example.com",
-    role: "Student",
-    status: "active",
-    joinedDate: "2024-01-18",
-    coursesEnrolled: "1",
-  },
-  {
-    id: "5",
-    name: "Carol Brown",
-    email: "carol@example.com",
-    role: "Instructor",
-    status: "active",
-    joinedDate: "2024-01-05",
-    coursesEnrolled: "0",
-  },
-]
 
 export default function UsersPage() {
     const [sorting, setSorting] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
     const [rowSelection, setRowSelection] = useState({})
     const [globalFilter, setGlobalFilter] = useState("")
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      const fetchUsers = async () => {
+        setLoading(true);
+        try {
+          const querySnapshot = await getDocs(collection(db, "users"));
+          const users = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          console.log(users);
+          setData(users);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+          setData([]);
+        }
+        setLoading(false);
+      };
+      fetchUsers();
+    }, []);
   
     const columns = [
       {
@@ -125,7 +92,7 @@ export default function UsersPage() {
               </span>
             </div>
             <div>
-              <div className="font-medium text-gray-900 dark:text-gray-100">{row.getValue("name")}</div>
+              <div className="font-medium text-gray-900 dark:text-gray-100">{row.getValue("name") || "No Name"}</div>
               <div className="text-sm text-gray-500 dark:text-gray-400">{row.original.email}</div>
             </div>
           </div>
@@ -251,6 +218,10 @@ export default function UsersPage() {
       },
     })
   
+    if (loading) {
+      return <div>Loading users...</div>;
+    }
+
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
         <div className="max-w-7xl mx-auto p-2">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '@/firebase';
@@ -10,6 +9,8 @@ const CourseDetails = () => {
   const [courseData, setCourseData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [shareClicked, setShareClicked] = useState(false);
 
   const router = useRouter();
   const { id } = router.query;
@@ -77,6 +78,22 @@ const CourseDetails = () => {
   const assignments = getField(courseData, ['course-assignments', 'assignments'], '0');
   const quizzes = getField(courseData, ['course-quizzes', 'quizzes'], '0');
   const thumbnailUrl = getField(courseData, ['course-thumbnailUrl', 'thumbnailUrl', 'thumbnail'], '');
+  const previewLink = getField(courseData, ['preview-link', 'preview_link'], '');
+
+  const handleShareClick = () => {
+    setShowShare((prev) => !prev);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareClicked(true);
+      setTimeout(() => setShareClicked(false), 400);
+      setShowShare(false);
+    } catch {
+      // Optionally show error
+    }
+  };
 
   if (loading) {
     return (
@@ -111,7 +128,9 @@ const CourseDetails = () => {
       <div className="max-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4">
+          <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
+            onClick={() => router.push('/course')}
+          >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Courses</span>
           </button>
@@ -164,15 +183,30 @@ const CourseDetails = () => {
                       onClick={() => setIsBookmarked(!isBookmarked)}
                       className={`p-2 rounded-full border-2 transition-all ${
                         isBookmarked 
-                          ? 'bg-red-500 border-red-500 text-white' 
+                          ? 'bg-red-500 border-red-500 text-white animate-heart-pop' 
                           : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500'
                       }`}
                     >
                       <Heart className="w-5 h-5" />
                     </button>
-                    <button className="p-2 rounded-full border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-all">
-                      <Share2 className="w-5 h-5" />
-                    </button>
+                    <div className="relative">
+                      <button
+                        className={`p-2 rounded-full border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-all ${shareClicked ? 'animate-share-pop' : ''}`}
+                        onClick={handleShareClick}
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </button>
+                      {showShare && (
+                        <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                          <button
+                            onClick={handleCopyLink}
+                            className="w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg flex items-center gap-2"
+                          >
+                            Copy Link
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -349,9 +383,15 @@ const CourseDetails = () => {
                     Enroll Now
                   </button>
                   
-                  <button className="w-full border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 font-medium py-3 px-6 rounded-lg transition-all duration-200">
+                  <a
+                    href={previewLink || '#'}
+                    target={previewLink ? '_blank' : undefined}
+                    rel={previewLink ? 'noopener noreferrer' : undefined}
+                    className={`w-full block border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 font-medium py-3 px-6 rounded-lg transition-all duration-200 text-center ${previewLink ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                    aria-disabled={!previewLink}
+                  >
                     Preview Course
-                  </button>
+                  </a>
                 </div>
 
                 {/* Course Features */}

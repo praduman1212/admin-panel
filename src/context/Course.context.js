@@ -25,7 +25,7 @@ export function CourseProvider({ children }) {
         if (!user) throw new Error('User must be authenticated');
         setIsLoading(true);
         try {
-            // Only use the specified fields
+            // Only use the specified fields, including preview link
             const newCourse = {
                 'course-assignments': courseData['course-assignments'] || '',
                 'course-category': courseData['course-category'] || '',
@@ -37,6 +37,7 @@ export function CourseProvider({ children }) {
                 'course-quizess': courseData['course-quizess'] || [],
                 'course-thumbnailUrl': courseData['course-thumbnailUrl'] || '',
                 'course-title': courseData['course-title'] || '',
+                'preview-link': courseData['preview-link'] || '',
             };
             // Add course to 'ncourse' collection
             const courseRef = await addDoc(collection(db, 'ncourse'), newCourse);
@@ -119,6 +120,7 @@ export function CourseProvider({ children }) {
                     'course-quizess': data['course-quizess'] || [],
                     'course-thumbnailUrl': data['course-thumbnailUrl'] || '',
                     'course-title': data['course-title'] || '',
+                    'preview-link': data['preview-link'] || '',
                 };
             });
             return courses;

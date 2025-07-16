@@ -19,22 +19,23 @@ export default function SettingsPage() {
   const [isCompactMode, setIsCompactMode] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoading, setIsLoading] = useState(false);
-  
   const { user, updateUserProfile, isLoading: authLoading } = useAuth();
 
+  // UI settings state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     role: "",
     avatar: "",
     joinDate: "",
-    lastLogin: ""
+    lastLogin: "",
   });
 
   // When user changes, update formData
   useEffect(() => {
     if (user) {
-      setFormData({
+      setFormData(prev => ({
+        ...prev,
         name: user.name || "",
         email: user.email || "",
         role: user.role || "",
@@ -45,9 +46,11 @@ export default function SettingsPage() {
         lastLogin: user.lastLogin
           ? new Date(user.lastLogin.seconds ? user.lastLogin.seconds * 1000 : user.lastLogin).toLocaleString()
           : ""
-      });
+      }));
     }
+
   }, [user]);
+
 
   const handleTabChange = (value) => {
     setActiveTab(value);
@@ -99,7 +102,10 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
+    <div
+      className="min-h-screen transition-all duration-300"
+      
+    >
       <div className="max-w-7xl mx-auto sm:p-6 lg:p-4">
         {/* Header */}
         <div className="mb-8">
@@ -109,10 +115,10 @@ export default function SettingsPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Settings
+              <span>Settings</span>
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Manage your account preferences and customize your experience
+                <span >Manage your account preferences and customize your experience</span>
               </p>
             </div>
           </div>
@@ -121,27 +127,31 @@ export default function SettingsPage() {
         {/* Settings Tabs */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
           <TabsList className="grid w-full h-12 grid-cols-3 lg:w-fit lg:grid-cols-3 bg-white/70 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 backdrop-blur-sm  rounded-xl">
-            <TabsTrigger 
-              value="profile" 
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg px-4 py-2.5"
-            >
-              <User className="w-4 h-4 mr-2" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger 
-              value="appearance" 
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg px-4 py-2.5"
-            >
-              <Palette className="w-4 h-4 mr-2" />
-              Appearance
-            </TabsTrigger>
-            <TabsTrigger 
-              value="security" 
-              className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg px-4 py-2.5"
-            >
-              <Shield className="w-4 h-4 mr-2" />
-              Security
-            </TabsTrigger>
+          <TabsTrigger 
+            value="profile" 
+            className="transition-all duration-200 rounded-lg px-4 py-2.5 border-2 border-transparent data-[state=active]:border-[var(--color,_#6366f1)] data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-sm text-black dark:text-white"
+            
+          >
+            <User className="w-4 h-4 mr-2" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger 
+            value="appearance" 
+            className="transition-all duration-200 rounded-lg px-4 py-2.5 border-2 border-transparent data-[state=active]:border-[var(--color,_#6366f1)] data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-sm text-black dark:text-white"
+           
+          >
+            <Palette className="w-4 h-4 mr-2" />
+            Appearance
+          </TabsTrigger>
+          <TabsTrigger 
+            value="security" 
+            className="transition-all duration-200 rounded-lg px-4 py-2.5 border-2 border-transparent data-[state=active]:border-[var(--color,_#6366f1)] data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-sm text-black dark:text-white"
+          
+          >
+            <Shield className="w-4 h-4 mr-2" />
+            Security
+          </TabsTrigger>
+         
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
@@ -274,30 +284,7 @@ export default function SettingsPage() {
                     />
                   </div>
                 </div>
-
-                <div className="p-6 rounded-xl bg-gray-50 dark:bg-gray-700/50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-lg bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400">
-                        <Monitor className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <Label htmlFor="compact-mode" className="text-base font-medium text-gray-900 dark:text-white">
-                          Compact Mode
-                        </Label>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          Reduce spacing and make the interface more compact
-                        </p>
-                      </div>
-                    </div>
-                    <Switch
-                      id="compact-mode"
-                      checked={isCompactMode}
-                      onCheckedChange={(checked) => handleAppearanceUpdate('compactMode', checked)}
-                      className="data-[state=checked]:bg-blue-500"
-                    />
-                  </div>
-                </div>
+              
               </CardContent>
             </Card>
           </TabsContent>
@@ -367,6 +354,7 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           </TabsContent>
+        
         </Tabs>
       </div>
     </div>

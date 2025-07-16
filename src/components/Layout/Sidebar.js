@@ -49,7 +49,7 @@ const Sidebar = () => {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                className={`flex items-center px-3 py-2 rounded-lg text-md font-medium transition-colors ${
                                     isActive(item.href)
                                         ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-500'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'

@@ -25,6 +25,7 @@ const Course = () => {
         'course-quizess': '',
         'course-price': '',
         'course-thumbnailUrl': '',
+        'preview-link': '',
     });
 
     // Fetch courses when component mounts
@@ -82,6 +83,7 @@ const Course = () => {
                 'course-quizess': formData['course-quizess'],
                 'course-price': formData['course-price'],
                 'course-thumbnailUrl': formData['course-thumbnailUrl'],
+                'preview-link': formData['preview-link'],
             });
 
             // Refresh courses list after creating new course
@@ -110,6 +112,7 @@ const Course = () => {
             'course-quizess': '',
             'course-price': '',
             'course-thumbnailUrl': '',
+            'preview-link': '',
         });
     };
 
@@ -118,18 +121,58 @@ const Course = () => {
         resetForm();
     };
 
-    // Filter courses by search term
+
+    // Sorting state for filter
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [sortField, setSortField] = useState('');
+    const [sortOrder, setSortOrder] = useState('asc');
+
+    // Sorting logic
+    const getSortedCourses = (list) => {
+        if (!sortField) return list;
+        const sorted = [...list].sort((a, b) => {
+            let aValue, bValue;
+            switch (sortField) {
+                case 'title':
+                    aValue = (a['course-title'] || '').toLowerCase();
+                    bValue = (b['course-title'] || '').toLowerCase();
+                    break;
+                case 'created_at':
+                    aValue = a.created_at?.seconds ? a.created_at.seconds : new Date(a.created_at || 0).getTime();
+                    bValue = b.created_at?.seconds ? b.created_at.seconds : new Date(b.created_at || 0).getTime();
+                    break;
+                case 'rating':
+                    aValue = parseFloat(a.rating || a['course-rating'] || 0);
+                    bValue = parseFloat(b.rating || b['course-rating'] || 0);
+                    break;
+                case 'price':
+                    aValue = parseFloat(a['course-price'] || 0);
+                    bValue = parseFloat(b['course-price'] || 0);
+                    break;
+                default:
+                    aValue = '';
+                    bValue = '';
+            }
+            if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        });
+        return sorted;
+    };
+
+    // Only search filter
     const filteredCourses = courses?.filter(course => {
-        const matchesSearch = (course['course-title'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        return (
+            (course['course-title'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
             (course['course-category'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (course['course-description'] || '').toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesSearch;
+            (course['course-description'] || '').toLowerCase().includes(searchTerm.toLowerCase())
+        );
     }) || [];
+
 
     // For now, treat all as available (no status field)
     const availableCourses = filteredCourses;
     const inProgressCourses = [];
-    console.log('Available courses:', availableCourses); // Debug log for available courses
 
     return (
         <div className="max-w-[1600px] mx-auto px-4 py-6">
@@ -157,22 +200,89 @@ const Course = () => {
                         />
                     </div>
 
-                    <div className="flex gap-3">
-                        <button
-                            className="px-4 py-2 flex items-center gap-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-                        >
-                            <Filter className="h-4 w-4" />
-                            Filter
-                        </button>
-                        
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="px-4 py-2 flex items-center gap-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            <Plus className="h-4 w-4" />
-                            Add Course
-                        </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setFilterModalOpen(true)}
+                        className="px-4 py-2 flex items-center gap-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                        <Filter className="h-4 w-4" />
+                        Sort
+                    </button>
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-4 py-2 flex items-center gap-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Course
+                    </button>
+                </div>
+            {/* Sort Modal */}
+            {filterModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-xs bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Sort Courses</h3>
+                            <button onClick={() => setFilterModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort by</label>
+                                <select
+                                    value={sortField + (sortOrder === 'desc' ? '-desc' : '')}
+                                    onChange={e => {
+                                        const val = e.target.value;
+                                        if (val.endsWith('-desc')) {
+                                            setSortField(val.replace('-desc', ''));
+                                            setSortOrder('desc');
+                                        } else {
+                                            setSortField(val);
+                                            setSortOrder('asc');
+                                        }
+                                    }}
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                >
+                                    <optgroup label="Title">
+                                        <option value="title">A-Z</option>
+                                        <option value="title-desc">Z-A</option>
+                                    </optgroup>
+                                    <optgroup label="Date">
+                                        <option value="created_at">Newest</option>
+                                        <option value="created_at-desc">Oldest</option>
+                                    </optgroup>
+                                    <optgroup label="Rating">
+                                        <option value="rating">High-Low</option>
+                                        <option value="rating-desc">Low-High</option>
+                                    </optgroup>
+                                    <optgroup label="Cost">
+                                        <option value="price">Low-High</option>
+                                        <option value="price-desc">High-Low</option>
+                                    </optgroup>
+                                    <option value="">Default</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="flex justify-end gap-2 mt-6">
+                            <button
+                                onClick={() => {
+                                    setSortField('');
+                                    setSortOrder('asc');
+                                }}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+                            >
+                                Clear
+                            </button>
+                            <button
+                                onClick={() => setFilterModalOpen(false)}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                            >
+                                Apply
+                            </button>
+                        </div>
                     </div>
+                </div>
+            )}
                 </div>
             </div>
 
@@ -215,7 +325,7 @@ const Course = () => {
                         
                         {availableCourses.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {availableCourses.map(course => (
+                                {getSortedCourses(availableCourses).map(course => (
                                     <CourseCard key={course.id} course={course} />
                                 ))}
                             </div>
@@ -407,6 +517,19 @@ const Course = () => {
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="https://example.com/thumbnail.jpg"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Preview Link
+                                    </label>
+                                    <input
+                                        type="url"
+                                        name="preview-link"
+                                        value={formData['preview-link']}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        placeholder="https://example.com/preview"
                                     />
                                 </div>
                             </div>

@@ -359,12 +359,10 @@ const CourseDetails = () => {
                   </div>
                 )}
 
-                {/* Raw data tab removed */}
               </div>
             </div>
           </div>
 
-          {/* Right Column - Pricing & Actions */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
               {/* Pricing Card */}

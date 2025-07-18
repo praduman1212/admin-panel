@@ -174,6 +174,19 @@ const Course = () => {
     const availableCourses = filteredCourses;
     const inProgressCourses = [];
 
+    // Render course cards with preview button/icon
+    return (
+        <div className="min-h-screen bg-[#181C2A] py-8 px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {availableCourses.map((course, idx) => (
+                    <div key={course.id || idx} className="relative bg-[#23273A] rounded-lg shadow-md p-6 flex flex-col justify-between">
+                        <CourseCard course={course} />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
     return (
         <div className="max-w-[1600px] mx-auto px-4 py-6">
             {/* Header Section */}

@@ -172,19 +172,7 @@ const CourseCard = ({ course }) => {
                                 <span>{displayLessons} lessons</span>
                             </div>
                         </div>
-                        {/* Preview Link */}
-                        {displayPreviewLink && (
-                            <div className="mt-2">
-                                <a
-                                    href={displayPreviewLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                                >
-                                    Preview Course
-                                </a>
-                            </div>
-                        )}
+                        {/* Preview Link removed as requested */}
                     </div>
                     <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                         <span className="text-lg font-bold text-gray-900 dark:text-white">

@@ -105,7 +105,7 @@ export default function AnalyticsPage() {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Overview</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Track your platform's performance and growth</p>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">Track your platform&apos;s performance and growth</p>
                 </div>
 
                 {/* Time Range Selector */}

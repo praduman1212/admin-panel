@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { LayoutDashboard, BookOpen, Users, BarChart2, Settings } from 'lucide-react';
@@ -10,7 +11,7 @@ const Sidebar = () => {
 
     const navigation = [
         {
-            name: 'Dashboard',
+            name: 'Overview',
             href: '/dashboard',
             icon: LayoutDashboard
         },
@@ -49,7 +50,7 @@ const Sidebar = () => {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                className={`flex items-center px-3 py-2 rounded-lg text-md font-medium transition-colors ${
                                     isActive(item.href)
                                         ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-500'
                                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -67,20 +68,24 @@ const Sidebar = () => {
                     <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
                             {user?.photoURL ? (
-                                <img
+                                <Image
                                     src={user.photoURL}
-                                    alt={user.displayName || 'User'}
+                                    alt={user.name || 'User'}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-full"
+                                    style={{ objectFit: 'cover' }}
+                                    priority={true}
                                 />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                                    {user?.displayName?.[0] || user?.email?.[0] || 'U'}
+                                    {user?.name?.[0] || user?.email?.[0] || 'U'}
                                 </div>
                             )}
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                {user?.displayName || 'User'}
+                                {user?.name || 'User'}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                 {user?.email}

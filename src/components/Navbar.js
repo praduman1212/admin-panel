@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Search, Bell, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/Auth.context';
@@ -173,10 +174,14 @@ const Navbar = () => {
                             onMouseLeave={() => setShowLabel(showLabel === 'admin-bar' ? 'admin-bar' : '')}
                         >
                             {user?.photoURL ? (
-                                <img
+                                <Image
                                     src={user.photoURL}
                                     alt={user.name || 'User'}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-full object-cover"
+                                    style={{ objectFit: 'cover' }}
+                                    priority={true}
                                 />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-medium">
@@ -195,7 +200,15 @@ const Navbar = () => {
                                 <div className="w-full flex flex-col gap-2">
                                     <div className="flex items-center gap-2">
                                         {user?.photoURL ? (
-                                            <img src={user.photoURL} alt={user.name || 'User'} className="w-8 h-8 rounded-full object-cover border border-[#8d95ab]" />
+                                            <Image
+                                                src={user.photoURL}
+                                                alt={user.name || 'User'}
+                                                width={32}
+                                                height={32}
+                                                className="w-8 h-8 rounded-full object-cover border border-[#8d95ab]"
+                                                style={{ objectFit: 'cover' }}
+                                                priority={true}
+                                            />
                                         ) : (
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-white text-base font-medium border border-[#8d95ab]">
                                                 {user?.name?.[0] || user?.email?.[0] || 'U'}

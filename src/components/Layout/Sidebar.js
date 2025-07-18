@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { LayoutDashboard, BookOpen, Users, BarChart2, Settings } from 'lucide-react';
@@ -67,10 +68,14 @@ const Sidebar = () => {
                     <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
                             {user?.photoURL ? (
-                                <img
+                                <Image
                                     src={user.photoURL}
                                     alt={user.name || 'User'}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-full"
+                                    style={{ objectFit: 'cover' }}
+                                    priority={true}
                                 />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">

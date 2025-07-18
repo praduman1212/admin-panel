@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Clock, Book, BarChart, Edit2, Trash2, MoreVertical } from 'lucide-react';
 import {
     DropdownMenu,
@@ -113,7 +114,11 @@ const CourseCard = ({ course }) => {
                     <img
                         src={displayThumbnail}
                         alt={displayTitle}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 400px"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        style={{ objectFit: 'cover' }}
+                        priority={true}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     {/* Course Status */}

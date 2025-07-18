@@ -98,7 +98,7 @@ export default function Home() {
           Dashboard Overview
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Welcome back! Here's what's happening with your platform.
+          Welcome back! Here&apos;s what&apos;s happening with your platform.
         </p>
       </div>
 

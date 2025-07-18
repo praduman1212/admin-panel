@@ -10,7 +10,7 @@ const publicPages = ['/login', '/signUp'];
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
-  const isPublicPage = publicPages.includes(router.pathname);
+  const isPublicPage = publicPages.includes(router.pathname);n
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

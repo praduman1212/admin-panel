@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Star, Clock, Users, BookOpen, Award, Download, Smartphone, FileText, Trophy, CheckCircle, Play, Globe, Calendar, Tag, ArrowLeft, Heart, Share2, User, DollarSign, BarChart3, PlayCircle, Monitor, Zap, Shield, Headphones, Database, Code, Coffee, Target, Lightbulb, Flame, Sparkles, Image, Video, MessageSquare, GraduationCap } from 'lucide-react';
+import { Star, Clock, Users, BookOpen, Award, Download, Smartphone, FileText, Trophy, CheckCircle, Play, Globe, Calendar, Tag, ArrowLeft, Heart, Share2, User, DollarSign, BarChart3, PlayCircle, Monitor, Zap, Shield, Headphones, Database, Code, Coffee, Target, Lightbulb, Flame, Sparkles, Video, MessageSquare, GraduationCap } from 'lucide-react';
+import Image from 'next/image';
 
 const CourseDetails = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -112,7 +113,7 @@ const CourseDetails = () => {
         <div className="text-center">
           <BookOpen className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Course Not Found</h2>
-          <p className="text-gray-600 dark:text-gray-400">The course you're looking for doesn't exist.</p>
+          <p className="text-gray-600 dark:text-gray-400">The course you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );
@@ -145,14 +146,14 @@ const CourseDetails = () => {
               {/* Course Thumbnail */}
               {thumbnailUrl && (
                 <div className="relative h-64 bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                  <img 
-                    src={thumbnailUrl} 
+                  <Image
+                    src={thumbnailUrl}
                     alt={title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 700px"
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
+                    style={{ objectFit: 'cover' }}
+                    priority={true}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
@@ -288,7 +289,7 @@ const CourseDetails = () => {
                     </div>
                     
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">What's Included</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">What&apos;s Included</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                           <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400" />

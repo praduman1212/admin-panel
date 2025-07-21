@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Search, Bell, Sun, Moon } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/context/Theme.context';
 import { useAuth } from '@/context/Auth.context';
 import Link from 'next/link';
 

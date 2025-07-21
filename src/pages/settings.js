@@ -21,7 +21,6 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { user, updateUserProfile, isLoading: authLoading } = useAuth();
 
-  // UI settings state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,7 +30,6 @@ export default function SettingsPage() {
     lastLogin: "",
   });
 
-  // When user changes, update formData
   useEffect(() => {
     if (user) {
       setFormData(prev => ({
@@ -69,7 +67,6 @@ export default function SettingsPage() {
       await updateUserProfile({
         name: formData.name,
         email: formData.email,
-        // add other fields as needed
       });
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -107,7 +104,6 @@ export default function SettingsPage() {
       
     >
       <div className="max-w-7xl mx-auto sm:p-6 lg:p-4">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 rounded-xl bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400">
@@ -124,7 +120,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Settings Tabs */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
           <TabsList className="grid w-full h-12 grid-cols-3 lg:w-fit lg:grid-cols-3 bg-white/70 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 backdrop-blur-sm  rounded-xl">
           <TabsTrigger 
@@ -156,7 +151,6 @@ export default function SettingsPage() {
 
           <TabsContent value="profile" className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-3">
-              {/* Profile Card */}
               <Card className="lg:col-span-1 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
                 <CardHeader className="text-center pb-4">
                   <div className="flex justify-center mb-4">
@@ -191,7 +185,6 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
 
-              {/* Profile Form */}
               <Card className="lg:col-span-2 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">

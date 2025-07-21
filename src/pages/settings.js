@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Sun, Moon, User, Shield, Settings, Eye, Lock, Mail, UserCircle, Palette, Monitor, Smartphone } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/context/Theme.context";
 import { toast } from "sonner";
 import { useAuth } from "@/context/Auth.context";
 import { useEffect } from "react";

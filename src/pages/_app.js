@@ -1,5 +1,5 @@
 import '@/styles/globals.css';
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from '@/context/Theme.context';
 import { AuthProvider } from '@/context/Auth.context';
 import { CourseProvider } from '@/context/Course.context';
 import { Toaster } from 'sonner';
@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }) {
   const isPublicPage = publicPages.includes(router.pathname);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider>
       <AuthProvider>
         <CourseProvider>
           {isPublicPage ? (

@@ -260,11 +260,6 @@ export default function UsersPage() {
                   </div>
                 )}
               </div>
-              
-              <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white">
-                <Plus className="h-4 w-4 mr-2" />
-                Add User
-              </Button>
             </div>
           </div>
   

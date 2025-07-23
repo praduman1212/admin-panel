@@ -57,19 +57,19 @@ const Navbar = () => {
     };
     return (
         <nav className="fixed top-0 right-0 left-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40">
-            <div className="h-full flex items-center justify-between px-5">
+            <div className="h-full flex flex-col sm:flex-row items-center justify-between px-2 sm:px-4 md:px-5 gap-2 sm:gap-0">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 ml-64">
+                <Link href="/" className="flex items-center gap-2 ml-0 sm:ml-64 min-w-fit">
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                         <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                     </div>
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">LMS</span>
+                    <span className="text-xl font-bold text-gray-900 dark:text-white hidden xs:inline">LMS</span>
                 </Link>
 
                 {/* Search Bar */}
-                <div className="flex-1 max-w-2xl mx-4">
+                <div className="relative flex-1 w-full max-w-xl mx-0 sm:mx-4 my-2 sm:my-0 order-3 sm:order-none">
                     <div className="relative flex items-center border-2 border-[#8d95ab] rounded-lg bg-white dark:bg-gray-900">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                         <input
@@ -77,7 +77,7 @@ const Navbar = () => {
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             placeholder="Search..."
-                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                         />
                         {/* Microphone Button */}
                         <button
@@ -93,7 +93,7 @@ const Navbar = () => {
                     </div>
                     {/* Live Search Results Dropdown - previous style */}
                     {searchResults.length > 0 && (
-                        <div className="absolute left-0 top-full mt-2 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                        <div className="absolute left-0 top-full mt-2 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
                             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {searchResults.map(result => (
                                     <li key={result.id} className="px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer" onClick={() => setSearch(result.name)}>
@@ -106,7 +106,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Right Section */}
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 sm:gap-6 min-w-fit">
                     {/* Theme Toggle */}
                     <div className="relative flex flex-col items-center">
                         <button

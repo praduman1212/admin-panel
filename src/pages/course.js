@@ -26,6 +26,7 @@ const Course = () => {
         'course-price': '',
         'course-thumbnailUrl': '',
         'preview-link': '',
+        'video-link': '',
     });
 
     // Fetch courses when component mounts
@@ -71,7 +72,7 @@ const Course = () => {
 
         setIsSubmitting(true);
         try {
-            // Create course with all available fields
+            // Create course with all available fields, including video-link
             await createCourse({
                 'course-title': formData['course-title'],
                 'course-category': formData['course-category'],
@@ -84,6 +85,7 @@ const Course = () => {
                 'course-price': formData['course-price'],
                 'course-thumbnailUrl': formData['course-thumbnailUrl'],
                 'preview-link': formData['preview-link'],
+                'video-link': formData['video-link'],
             });
 
             // Refresh courses list after creating new course
@@ -113,6 +115,7 @@ const Course = () => {
             'course-price': '',
             'course-thumbnailUrl': '',
             'preview-link': '',
+            'video-link': '',
         });
     };
 
@@ -530,6 +533,19 @@ const Course = () => {
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         placeholder="https://example.com/preview"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Video Link
+                                    </label>
+                                    <input
+                                        type="url"
+                                        name="video-link"
+                                        value={formData['video-link']}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        placeholder="https://example.com/video"
                                     />
                                 </div>
                             </div>

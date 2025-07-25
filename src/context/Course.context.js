@@ -38,6 +38,7 @@ export function CourseProvider({ children }) {
                 'course-thumbnailUrl': courseData['course-thumbnailUrl'] || '',
                 'course-title': courseData['course-title'] || '',
                 'preview-link': courseData['preview-link'] || '',
+                'video-link': courseData['video-link'] || '',
             };
             // Add course to 'ncourse' collection
             const courseRef = await addDoc(collection(db, 'ncourse'), newCourse);

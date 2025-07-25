@@ -76,6 +76,7 @@ const CourseCard = ({ course }) => {
     ["course-price"]: coursePrice,
     ["course-thumbnailUrl"]: courseThumbnailUrl,
     ["preview-link"]: previewLink,
+    ["video-link"]: videoLink,
     // Legacy field names as fallback
     course_title,
     course_description,
@@ -85,6 +86,7 @@ const CourseCard = ({ course }) => {
     course_price,
     thumbnail,
     preview_link,
+    video_link,
   } = course;
 
   // Use new fields if present, otherwise fallback to legacy
@@ -100,6 +102,7 @@ const CourseCard = ({ course }) => {
     thumbnail ||
     "https://via.placeholder.com/400x300?text=Course+Image";
   const displayPreviewLink = previewLink || preview_link || "";
+  const displayVideoLink = videoLink || video_link || "";
 
   const handleDelete = async () => {
     try {
@@ -185,7 +188,37 @@ const CourseCard = ({ course }) => {
                 <span>{displayLessons} lessons</span>
               </div>
             </div>
-            {/* Preview Link removed as requested */}
+            {/* Video Link */}
+            {displayVideoLink && (
+              <div className="mt-2">
+                {displayVideoLink.includes('youtube.com') || displayVideoLink.includes('youtu.be') ? (
+                  <div className="aspect-video w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <iframe
+                      src={
+                        displayVideoLink.includes('youtube.com')
+                          ? displayVideoLink.replace('watch?v=', 'embed/')
+                          : displayVideoLink.includes('youtu.be')
+                            ? `https://www.youtube.com/embed/${displayVideoLink.split('youtu.be/')[1]}`
+                            : displayVideoLink
+                      }
+                      title="Course Video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80"
+                    ></iframe>
+                  </div>
+                ) : (
+                  <a
+                    href={displayVideoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded hover:underline"
+                  >
+                    Watch Video
+                  </a>
+                )}
+              </div>
+            )}
           </div>
           <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <span className="text-lg font-bold text-gray-900 dark:text-white">

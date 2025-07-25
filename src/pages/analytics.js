@@ -100,16 +100,16 @@ export default function AnalyticsPage() {
 
     return (
 
-        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-            <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-4">
+        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200 px-2 sm:px-4">
+            <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Overview</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Track your platform&apos;s performance and growth</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Overview</h1>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Track your platform&apos;s performance and growth</p>
                 </div>
 
                 {/* Time Range Selector */}
-                <div className="flex items-center gap-2 mb-6">
+                <div className="flex flex-wrap items-center gap-2 mb-6">
                     {["6m", "1y", "all"].map((range) => (
                         <button
                             key={range}
@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Metrics Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
                     {metrics.map((metric) => (
                         <div
                             key={metric.title}
@@ -158,9 +158,9 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Charts Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     {/* User Growth Chart */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Growth</h3>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
@@ -195,7 +195,7 @@ export default function AnalyticsPage() {
                     </div>
 
                     {/* Revenue Chart */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Revenue</h3>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
@@ -224,7 +224,7 @@ export default function AnalyticsPage() {
                     </div>
 
                     {/* Course Enrollment Chart */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Course Enrollments</h3>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
@@ -247,7 +247,7 @@ export default function AnalyticsPage() {
                     </div>
 
                     {/* User Distribution Chart */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Distribution</h3>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">

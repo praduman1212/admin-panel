@@ -104,14 +104,14 @@ const Dashboard = () => {
   // }, [sortField]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-[#1a1f2b]" style={{ fontFamily: font }}>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 dark:bg-[#1a1f2b]" style={{ fontFamily: font }}>
       <Sidebar />
-      <main className="flex-1">
-        <div className="max-w-7xl mx-auto p-6">
+      <main className="flex-1 w-full">
+        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
           {/* Overview Header */}
           <div className="mb-8">
             <h1
-              className="text-3xl font-bold text-gray-900 dark:text-white"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white"
               style={{
                 fontFamily: font,
                 fontSize:
@@ -123,7 +123,7 @@ const Dashboard = () => {
               Welcome back, Admin
             </h1>
             <p
-              className="text-gray-600 dark:text-gray-400 mt-2"
+              className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 mt-2"
               style={{
                 fontFamily: font,
                 fontSize:
@@ -137,7 +137,7 @@ const Dashboard = () => {
           </div>
 
           {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
             {stats.map(stat => (
               <div
                 key={stat.label}
@@ -153,8 +153,8 @@ const Dashboard = () => {
 
           {/* Recently Added Courses */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '1em' : displaySize === 'large' ? '1.5em' : '1.2em' }}>Recently Added Courses</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '1em' : displaySize === 'large' ? '1.5em' : '1.2em' }}>Recently Added Courses</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {recentCourses.length === 0 ? (
                 <div className="col-span-full text-gray-500 dark:text-gray-400">No recent courses found.</div>
               ) : recentCourses.map(course => (
@@ -165,8 +165,8 @@ const Dashboard = () => {
 
           {/* All Courses List */}
           <div className="mb-12">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '1em' : displaySize === 'large' ? '1.5em' : '1.2em' }}>All Courses</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '1em' : displaySize === 'large' ? '1.5em' : '1.2em' }}>All Courses</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {courses.length === 0 ? (
                 <div className="col-span-full text-gray-500 dark:text-gray-400">No courses found.</div>
               ) : courses.map(course => (
@@ -177,11 +177,11 @@ const Dashboard = () => {
 
           {/* Users Table */}
           <div className="mb-12">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '1em' : displaySize === 'large' ? '1.5em' : '1.2em' }}>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '1em' : displaySize === 'large' ? '1.5em' : '1.2em' }}>
               <Users className="w-6 h-6 text-blue-500" /> Users
             </h2>
             <div className="overflow-x-auto rounded-lg shadow">
-              <table className="min-w-full bg-white dark:bg-gray-800" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '0.9em' : displaySize === 'large' ? '1.15em' : '1em' }}>
+              <table className="min-w-full bg-white dark:bg-gray-800 text-xs sm:text-sm" style={{ fontFamily: font, fontSize: displaySize === 'small' ? '0.9em' : displaySize === 'large' ? '1.15em' : '1em' }}>
                 <thead>
                   <tr>
                     <th className="px-4 py-3 border-b text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">#</th>

@@ -28,13 +28,11 @@ const MainLayout = ({ children }) => {
         <div className="min-h-screen bg-gray-50 dark:bg-[#1a1f2b]">
             {/* Navbar - Fixed at top */}
             <Navbar />
-            
-            <div className="flex h-screen pt-16"> {/* Add pt-16 to account for navbar height */}
+            <div className="flex flex-col sm:flex-row h-screen pt-16">
                 {/* Sidebar - Fixed at left */}
                 <Sidebar />
-                
-                {/* Main Content Area - Scrollable */}
-                <main className="flex-1 overflow-auto ml-64 p-6">
+                {/* Main Content Area - Responsive & Scrollable */}
+                <main className="flex-1 overflow-auto w-full ml-0 sm:ml-64 p-2 sm:p-4 md:p-6">
                     {children}
                 </main>
             </div>

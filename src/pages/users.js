@@ -223,19 +223,19 @@ export default function UsersPage() {
     }
 
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto p-2">
+      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200 px-2 sm:px-4">
+        <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your team members and students</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Manage your team members and students</p>
           </div>
   
           {/* Actions Bar */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6 shadow-sm">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="relative flex-1 max-w-sm">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 mb-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 flex-wrap">
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 flex-1 min-w-0 w-full">
+                <div className="relative flex-1 w-full max-w-sm">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4" />
                   <Input
                     placeholder="Search users..."
@@ -266,7 +266,7 @@ export default function UsersPage() {
           {/* Table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs sm:text-sm">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
@@ -314,8 +314,8 @@ export default function UsersPage() {
           </div>
   
           {/* Pagination */}
-          <div className="flex items-center justify-between pt-6">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between pt-6 gap-3">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Showing {table.getRowModel().rows.length} of {data.length} users
               {Object.keys(rowSelection).length > 0 && (
                 <span className="ml-2 text-blue-600 dark:text-blue-400 font-medium">

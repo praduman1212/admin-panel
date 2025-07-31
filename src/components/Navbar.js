@@ -15,22 +15,48 @@ const Navbar = () => {
     const recognitionRef = React.useRef(null);
 
     // Dummy search logic (replace with real API/filter as needed)
+    // Live search logic (replace with real API/filter as needed)
     React.useEffect(() => {
         if (search.trim() === '') {
             setSearchResults([]);
             return;
         }
-        // Example: filter courses by name (replace with real data)
-        const courses = [
-            { name: 'React Basics', id: 1 },
-            { name: 'Advanced JS', id: 2 },
-            { name: 'Firebase 101', id: 3 },
-            { name: 'Next.js Mastery', id: 4 },
+        // Example: filter users and courses by name/email (replace with real data/API)
+        const users = [
+            { name: 'John Doe', email: 'john@example.com', id: 'u1', type: 'user' },
+            { name: 'Laxmi Khati', email: 'laxmikhati2004@gmail.com', id: 'u2', type: 'user' },
+            { name: 'Manish Maurya', email: 'manishmaury935@gmail.com', id: 'u3', type: 'user' },
         ];
-        setSearchResults(
-            courses.filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
+        const courses = [
+            { name: 'React Basics', id: 'c1', type: 'course' },
+            { name: 'Advanced JS', id: 'c2', type: 'course' },
+            { name: 'Firebase 101', id: 'c3', type: 'course' },
+            { name: 'Next.js Mastery', id: 'c4', type: 'course' },
+        ];
+        // Search both name and id for courses
+        const userResults = users.filter(u =>
+            u.name && u.name.toLowerCase().includes(search.toLowerCase()) ||
+            u.email && u.email.toLowerCase().includes(search.toLowerCase())
         );
+        const courseResults = courses.filter(c =>
+            (c.name && c.name.toLowerCase().includes(search.toLowerCase())) ||
+            (c.id && c.id.toLowerCase().includes(search.toLowerCase()))
+        );
+        // Always show both user and course results if any match
+        setSearchResults([...userResults, ...courseResults]);
     }, [search]);
+
+    // Handle selection from live search results
+    const handleSelectResult = (result) => {
+        setSearch(result.name);
+        setSearchResults([]);
+        // Navigate to user or course page
+        if (result.type === 'user') {
+            window.open(`/profile/${result.id}`, '_blank');
+        } else if (result.type === 'course') {
+            window.open(`/course/${result.id}`, '_blank');
+        }
+    };
 
     // Microphone/voice search logic
     const handleMicClick = () => {
@@ -98,8 +124,25 @@ const Navbar = () => {
                             <div className="absolute left-0 top-full mt-2 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
                                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                                     {searchResults.map(result => (
-                                        <li key={result.id} className="px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer" onClick={() => setSearch(result.name)}>
-                                            {result.name}
+                                        <li key={result.id} className="px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer flex items-center gap-2" onClick={() => handleSelectResult(result)}>
+                                            {result.type === 'user' ? (
+                                                <span className="inline-block w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 text-white text-xs font-bold flex items-center justify-center">
+                                                    {result.name[0]}
+                                                </span>
+                                            ) : (
+                                                <span className="inline-block w-6 h-6 rounded bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">
+                                                    📚
+                                                </span>
+                                            )}
+                                            <span className="flex-1">
+                                                {result.name}
+                                                {result.type === 'user' && (
+                                                    <span className="block text-xs text-gray-500 dark:text-gray-400">{result.email}</span>
+                                                )}
+                                            </span>
+                                            <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                                                {result.type === 'user' ? 'User' : 'Course'}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>

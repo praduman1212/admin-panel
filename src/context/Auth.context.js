@@ -175,16 +175,19 @@ export function AuthProvider({ children }) {
         updatedAt: new Date()
       }, { merge: true });
 
-      if (updates.name) {
-        await updateProfile(auth.currentUser, {
-          displayName: updates.name
-        });
+      // Update Firebase Auth profile if name or avatar (photoURL) changed
+      const profileUpdates = {};
+      if (updates.name) profileUpdates.displayName = updates.name;
+      if (updates.avatar) profileUpdates.photoURL = updates.avatar;
+      if (Object.keys(profileUpdates).length > 0) {
+        await updateProfile(auth.currentUser, profileUpdates);
       }
 
       // Update local state
       setUser(prev => ({
         ...prev,
         ...updates,
+        photoURL: updates.avatar || prev.photoURL,
         updatedAt: new Date()
       }));
     } catch (error) {

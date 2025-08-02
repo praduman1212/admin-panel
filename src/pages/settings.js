@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { uploadProfileImage } from "@/lib/firebase/upload";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Sun, Moon, User, Shield, Settings, Eye, Lock, Mail, UserCircle, Palette, Monitor, Smartphone } from "lucide-react";
+import { Sun, Moon, User, Shield, Settings, Eye, Lock, Mail, UserCircle, Palette, Monitor, Smartphone, Pencil } from "lucide-react";
 import { useTheme } from "@/context/Theme.context";
 import { toast } from "sonner";
 import { useAuth } from "@/context/Auth.context";
@@ -29,6 +30,9 @@ export default function SettingsPage() {
     joinDate: "",
     lastLogin: "",
   });
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -62,17 +66,59 @@ export default function SettingsPage() {
   };
 
   const handleProfileUpdate = async () => {
+    if (isLoading) return;
     setIsLoading(true);
+    let avatarUrl = formData.avatar;
     try {
-      await updateUserProfile({
+      if (avatarFile && user?.uid) {
+        console.log('Uploading avatar...');
+        avatarUrl = await uploadProfileImage(avatarFile, user.uid);
+        console.log('Avatar uploaded:', avatarUrl);
+      }
+      if (!avatarUrl) {
+        throw new Error('Avatar URL is empty after upload.');
+      }
+      // Only send fields that are actually updatable
+      const updatePayload = {
         name: formData.name,
-        email: formData.email,
-      });
+        avatar: avatarUrl,
+        photoURL: avatarUrl,
+      };
+      // Only include email if it is different and updatable
+      if (formData.email && formData.email !== user.email) {
+        updatePayload.email = formData.email;
+      }
+      console.log('Updating user profile with:', updatePayload);
+      await updateUserProfile(updatePayload);
+      setFormData(prev => ({ ...prev, avatar: avatarUrl }));
       toast.success("Profile updated successfully!");
     } catch (error) {
-      toast.error("Failed to update profile");
+      console.error('Profile update error:', error);
+      toast.error("Failed to update profile: " + (error?.message || error));
+      alert('Profile update error: ' + (error?.message || error));
+    } finally {
+      setAvatarFile(null);
+      setAvatarPreview("");
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  };
+
+  // Removed handleAvatarSave; avatar is only updated on Save Changes
+
+  const handleAvatarEditClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setAvatarPreview(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAppearanceUpdate = (type, value) => {
@@ -152,13 +198,31 @@ export default function SettingsPage() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <Card className="md:col-span-1 lg:col-span-1 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
                 <CardHeader className="text-center pb-4">
-                  <div className="flex justify-center mb-4">
-                    <Avatar className="w-24 h-24 border-4 border-blue-500/20">
-                      <AvatarImage src={formData.avatar} alt={formData.name} />
-                      <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {formData.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
+                  <div className="flex flex-col items-center mb-4 relative group gap-2">
+                    <div className="relative">
+                      <Avatar className="w-24 h-24 border-4 border-blue-500/20">
+                        <AvatarImage src={avatarPreview || formData.avatar} alt={formData.name} />
+                        <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          {formData.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <button
+                        type="button"
+                        onClick={handleAvatarEditClick}
+                        className="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 shadow transition-opacity opacity-80 group-hover:opacity-100"
+                        title="Edit profile image"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                      />
+                    </div>
+                    {/* Removed Update Profile Picture button; avatar is saved on Save Changes */}
                   </div>
                   <CardTitle className="text-xl text-gray-900 dark:text-white">
                     {formData.name}

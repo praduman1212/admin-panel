@@ -12,6 +12,7 @@ const Navbar = () => {
     const [search, setSearch] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [listening, setListening] = useState(false);
+    // Removed roleFilter state
     const recognitionRef = React.useRef(null);
 
     // Dummy search logic (replace with real API/filter as needed)
@@ -21,11 +22,11 @@ const Navbar = () => {
             setSearchResults([]);
             return;
         }
-        // Example: filter users and courses by name/email (replace with real data/API)
+        // Example: filter users and courses by name/email/role (replace with real data/API)
         const users = [
-            { name: 'John Doe', email: 'john@example.com', id: 'u1', type: 'user' },
-            { name: 'Laxmi Khati', email: 'laxmikhati2004@gmail.com', id: 'u2', type: 'user' },
-            { name: 'Manish Maurya', email: 'manishmaury935@gmail.com', id: 'u3', type: 'user' },
+            { name: 'John Doe', email: 'john@example.com', id: 'u1', type: 'user', role: 'student' },
+            { name: 'Laxmi Khati', email: 'laxmikhati2004@gmail.com', id: 'u2', type: 'user', role: 'admin' },
+            { name: 'Manish Maurya', email: 'manishmaury935@gmail.com', id: 'u3', type: 'user', role: 'teacher' },
         ];
         const courses = [
             { name: 'React Basics', id: 'c1', type: 'course' },
@@ -35,8 +36,8 @@ const Navbar = () => {
         ];
         // Search both name and id for courses
         const userResults = users.filter(u =>
-            u.name && u.name.toLowerCase().includes(search.toLowerCase()) ||
-            u.email && u.email.toLowerCase().includes(search.toLowerCase())
+            (u.name && u.name.toLowerCase().includes(search.toLowerCase())) ||
+            (u.email && u.email.toLowerCase().includes(search.toLowerCase()))
         );
         const courseResults = courses.filter(c =>
             (c.name && c.name.toLowerCase().includes(search.toLowerCase())) ||

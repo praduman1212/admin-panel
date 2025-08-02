@@ -25,10 +25,7 @@ import { toast } from "sonner";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const { isLoading, login, signInWithGoogle } = useAuth();
+    const { isLoading, signInWithGoogle } = useAuth();
     const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
 
@@ -36,52 +33,6 @@ export default function LoginPage() {
         setMounted(true);
     }, []);
 
-    const validateForm = () => {
-        if (!email.trim()) {
-            toast.error("Please enter your email");
-            return false;
-        }
-        if (!email.includes("@") || !email.includes(".")) {
-            toast.error("Please enter a valid email address");
-            return false;
-        }
-        if (!password) {
-            toast.error("Please enter your password");
-            return false;
-        }
-        return true;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!validateForm()) return;
-
-        try {
-            await login(email, password);
-            toast.success("Welcome back!");
-            router.push("/");
-        } catch (error) {
-            console.error("Login error:", error);
-            // Handle specific Firebase error codes
-            switch (error.code) {
-                case 'auth/user-not-found':
-                    toast.error("No account found with this email. Please sign up.");
-                    break;
-                case 'auth/wrong-password':
-                    toast.error("Incorrect password. Please try again.");
-                    break;
-                case 'auth/invalid-email':
-                    toast.error("Please enter a valid email address.");
-                    break;
-                case 'auth/too-many-requests':
-                    toast.error("Too many failed attempts. Please try again later.");
-                    break;
-                default:
-                    toast.error(error.message || "Error logging in. Please try again.");
-            }
-        }
-    };
 
     const handleGoogleSignIn = async () => {
         try {
@@ -103,19 +54,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#1a1f2b] text-gray-900 dark:text-gray-100 flex items-center justify-center p-4">
-            <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="fixed top-4 right-4 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                aria-label="Toggle theme"
-            >
-                {theme === 'dark' ? (
-                    <Sun className="w-5 h-5" />
-                ) : (
-                    <Moon className="w-5 h-5" />
-                )}
-            </button>
-
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-300 dark:from-[#1a1f2b] dark:via-[#232936] dark:to-[#232936] text-gray-900 dark:text-gray-100 flex items-center justify-center p-4">
             <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Left Side - Features */}
                 <motion.div
@@ -124,31 +63,30 @@ export default function LoginPage() {
                     transition={{ duration: 0.6 }}
                     className="space-y-8"
                 >
-                    <div className="flex items-center space-x-3">
-                        <div className="p-2 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                            <GraduationCap className="w-10 h-10 text-white" />
+                    <div className="flex items-center space-x-4 justify-center">
+                        <div className="p-3 w-16 h-16 bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg animate-bounce">
+                            <GraduationCap className="w-12 h-12 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                                 LMS
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-lg text-gray-600 dark:text-gray-400 font-medium">
                                 Learn. Grow. Succeed.
                             </p>
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <h2 className="text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                    <div className="space-y-6 text-center">
+                        <h2 className="text-5xl font-extrabold text-blue-700 dark:text-white leading-tight mb-2">
                             Welcome Back!
                         </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Continue your learning journey with our comprehensive
-                            learning management system.
+                        <p className="text-2xl text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                            Sign in to continue your learning journey with our comprehensive LMS.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6">
                         <FeatureBox
                             Icon={Users}
                             label="12,000+"
@@ -176,30 +114,29 @@ export default function LoginPage() {
                     </div>
                 </motion.div>
 
-                {/* Right Side - Login Form */}
+                {/* Right Side - Login Form (Google only) */}
                 <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                    <div className="bg-white dark:bg-[#232936] rounded-2xl p-8 shadow-lg dark:shadow-none backdrop-blur-sm">
-                        <div className="mb-8">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
-                                Welcome Back
+                    <div className="bg-white dark:bg-[#232936] rounded-2xl p-10 shadow-xl dark:shadow-none backdrop-blur-sm flex flex-col items-center animate-fade-in">
+                        <div className="mb-8 text-center">
+                            <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                Login to LMS
                             </h3>
-                            <p className="mt-2 text-center text-gray-600 dark:text-gray-400">
-                                Sign in to your account
+                            <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
+                                One-click Google login. Fast, secure, and easy.
                             </p>
                         </div>
-
-                        {/* Google Sign In Button */}
+                        {/* Google Sign In Button Only */}
                         <button
                             type="button"
                             onClick={handleGoogleSignIn}
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-white dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-[#313844] transition-colors duration-200 mb-6"
+                            className="w-full flex items-center justify-center space-x-4 py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-2xl shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         >
-                            <svg className="w-5 h-5" viewBox="0 0 24 24">
+                            <svg className="w-7 h-7 mr-2" viewBox="0 0 24 24">
                                 <path
                                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                                     fill="#4285F4"
@@ -217,83 +154,17 @@ export default function LoginPage() {
                                     fill="#EA4335"
                                 />
                             </svg>
-                            <span className="text-gray-900 dark:text-white font-medium">
-                                Continue with Google
-                            </span>
+                            <span>Login with Google</span>
                         </button>
-
-                        <div className="relative my-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <Separator className="w-full" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-white dark:bg-[#232936] px-2 text-gray-500 dark:text-gray-400">
-                                    Or continue with
-                                </span>
-                            </div>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <input
-                                    type="email"
-                                    placeholder="Email Address"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                                    required
-                                />
-                            </div>
-
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="w-5 h-5" />
-                                    ) : (
-                                        <Eye className="w-5 h-5" />
-                                    )}
-                                </button>
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
-                            >
-                                {isLoading ? (
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                ) : (
-                                    <>
-                                        <span>Sign In</span>
-                                        <ArrowRight className="w-5 h-5" />
-                                    </>
-                                )}
-                            </button>
-
-                            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
-                                Don&apos;t have an account?{" "}
-                                <Link
-                                    href="/signUp"
-                                    className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium"
-                                >
-                                    Sign up
-                                </Link>
-                            </p>
-                        </form>
+                        <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
+                            By signing in, you agree to our <Link href="/terms" className="text-blue-600 dark:text-blue-400 underline">Terms of Service</Link> and <Link href="/privacy" className="text-blue-600 dark:text-blue-400 underline">Privacy Policy</Link>.
+                        </p>
+                        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 text-center">
+                            New here?{' '}
+                            <Link href="/signUp" className="text-blue-600 dark:text-blue-400 font-semibold underline hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+                                Create an account
+                            </Link>
+                        </p>
                     </div>
                 </motion.div>
             </div>

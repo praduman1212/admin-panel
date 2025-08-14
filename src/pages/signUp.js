@@ -30,6 +30,10 @@ export default function SignUpPage() {
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [role, setRole] = useState("");
+    const [dob, setDob] = useState("");
+    const [address, setAddress] = useState("");
+    const [gender, setGender] = useState("");
     const { isLoading, signUp, signInWithGoogle } = useAuth();
     const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
@@ -67,6 +71,22 @@ export default function SignUpPage() {
             toast.error("Password must be at least 6 characters long");
             return false;
         }
+        if (!role) {
+            toast.error("Please select a role");
+            return false;
+        }
+        if (!dob) {
+            toast.error("Please enter your date of birth");
+            return false;
+        }
+        if (!gender) {
+            toast.error("Please select your gender");
+            return false;
+        }
+        if (!address.trim()) {
+            toast.error("Please enter your address");
+            return false;
+        }
         return true;
     };
 
@@ -76,7 +96,7 @@ export default function SignUpPage() {
         if (!validateForm()) return;
 
         try {
-            await signUp(email, password, name);
+            await signUp(email, password, name, role, dob, gender, address, phone);
             toast.success("Account created successfully! Please log in.");
             router.push("/login");
         } catch (error) {
@@ -118,19 +138,13 @@ export default function SignUpPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#1a1f2b] text-gray-900 dark:text-gray-100 flex items-center justify-center p-4">
-            <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="fixed top-4 right-4 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                aria-label="Toggle theme"
-            >
-                {theme === 'dark' ? (
-                    <Sun className="w-5 h-5" />
-                ) : (
-                    <Moon className="w-5 h-5" />
-                )}
-            </button>
-            <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-blue-100 via-white to-blue-300 dark:from-[#1a1f2b] dark:via-[#232936] dark:to-[#232936] text-gray-900 dark:text-gray-100">
+            {/* Animated gradient and floating shapes for visual appeal */}
+            <div className="absolute top-0 left-0 w-72 h-72 bg-blue-900 opacity-30 dark:opacity-0 rounded-full blur-3xl animate-pulse -z-10" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-900 opacity-30 dark:opacity-0 rounded-full blur-3xl animate-pulse -z-10" />
+            <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-pink-900 opacity-20 dark:opacity-0 rounded-full blur-2xl animate-bounce -z-10" />
+            {/* Theme toggle button removed as requested */}
+            <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center z-10">
                 {/* Left Side - Features */}
                 <motion.div
                     initial={{ opacity: 0, x: -50 }}
@@ -139,24 +153,24 @@ export default function SignUpPage() {
                     className="space-y-8"
                 >
                     <div className="flex items-center space-x-3">
-                        <div className="p-2 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                        <div className="p-2 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/40">
                             <GraduationCap className="w-10 h-10 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-3xl font-extrabold text-white drop-shadow-lg tracking-tight">
                                 LMS
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-gray-200 font-medium">
                                 Learn. Grow. Succeed.
                             </p>
                         </div>
                     </div>
 
                     <div className="space-y-6">
-                        <h2 className="text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                        <h2 className="text-4xl font-extrabold text-white leading-tight drop-shadow-lg tracking-tight">
                             Transform Your Learning Journey
                         </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <p className="text-xl text-gray-200 leading-relaxed font-medium">
                             Join thousands of learners and educators in our comprehensive
                             learning management system.
                         </p>
@@ -167,41 +181,55 @@ export default function SignUpPage() {
                             Icon={Users}
                             label="12,000+"
                             description="Active Students"
-                            iconColor="text-blue-500"
+                            iconColor="text-blue-100"
                         />
                         <FeatureBox
                             Icon={BookOpen}
                             label="500+"
                             description="Courses"
-                            iconColor="text-blue-500"
+                            iconColor="text-blue-100"
                         />
                         <FeatureBox
                             Icon={Award}
                             label="98%"
                             description="Success Rate"
-                            iconColor="text-green-500"
+                            iconColor="text-green-200"
                         />
                         <FeatureBox
                             Icon={BarChart3}
                             label="24/7"
                             description="Support"
-                            iconColor="text-purple-500"
+                            iconColor="text-purple-200"
                         />
                     </div>
                 </motion.div>
 
-                {/* Right Side - Login Form */}
+                {/* Right Side - Sign Up Form */}
                 <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.2 }}
                 >
-                    <div className="bg-white dark:bg-[#232936] rounded-2xl p-8 shadow-lg dark:shadow-none backdrop-blur-sm">
+                    <div className="bg-white/90 dark:bg-black rounded-3xl p-10 shadow-2xl backdrop-blur-lg border border-white/40 dark:border-gray-700/40 relative">
+                        {/* Stepper indicator */}
+                        <div className="flex justify-center mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
+                                <span className="w-3 h-3 rounded-full bg-purple-400 opacity-50" />
+                                <span className="w-3 h-3 rounded-full bg-pink-400 opacity-30" />
+                            </div>
+                        </div>
+                        {/* Avatar placeholder with hover */}
+                        <div className="flex justify-center mb-6">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center shadow-xl border-4 border-white dark:border-gray-800 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                                <User className="w-10 h-10 text-white" />
+                            </div>
+                        </div>
                         <div className="mb-8">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
+                            <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white text-center tracking-tight">
                                 Create an Account
                             </h3>
-                            <p className="mt-2 text-center text-gray-600 dark:text-gray-400">
+                            <p className="mt-2 text-center text-gray-600 dark:text-gray-400 font-medium">
                                 Join our learning community today
                             </p>
                         </div>
@@ -211,7 +239,7 @@ export default function SignUpPage() {
                             type="button"
                             onClick={handleGoogleSignIn}
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-white dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-[#313844] transition-colors duration-200 mb-6"
+                            className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 mb-6 shadow-md focus:ring-2 focus:ring-blue-400"
                         >
                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                 <path
@@ -231,7 +259,7 @@ export default function SignUpPage() {
                                     fill="#EA4335"
                                 />
                             </svg>
-                            <span className="text-gray-900 dark:text-white font-medium">
+                            <span className="text-gray-900 dark:text-white font-semibold">
                                 Continue with Google
                             </span>
                         </button>
@@ -241,63 +269,117 @@ export default function SignUpPage() {
                                 <Separator className="w-full" />
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-white dark:bg-[#232936] px-2 text-gray-500 dark:text-gray-400">
+                                <span className="bg-white/90 dark:bg-[#232936]/90 px-2 text-gray-500 dark:text-gray-400 font-semibold">
                                     Or continue with
                                 </span>
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* ...existing code... */}
                             <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
                                 <input
                                     type="text"
                                     placeholder="Full Name"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                    className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-black border border-blue-200 dark:border-blue-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200"
                                     required
                                 />
                             </div>
 
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
+                                <select
+                                    value={role}
+                                    onChange={e => setRole(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-black border border-purple-200 dark:border-purple-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:shadow-lg text-gray-900 dark:text-white shadow-sm transition-all duration-200"
+                                    required
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value="student">Student</option>
+                                    <option value="teacher">Teacher</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    placeholder="Date of Birth"
+                                    value={dob}
+                                    onChange={e => setDob(e.target.value)}
+                                    className="w-full pl-4 pr-4 py-3 bg-white/80 dark:bg-black border border-blue-200 dark:border-blue-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg text-gray-900 dark:text-white shadow-sm transition-all duration-200"
+                                    required
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
+                                <select
+                                    value={gender}
+                                    onChange={e => setGender(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-black border border-pink-200 dark:border-pink-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:shadow-lg text-gray-900 dark:text-white shadow-sm transition-all duration-200"
+                                    required
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div className="relative">
+                                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2h5" /></svg>
+                                <input
+                                    type="text"
+                                    placeholder="Address"
+                                    value={address}
+                                    onChange={e => setAddress(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-black border border-green-200 dark:border-green-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200"
+                                    required
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
                                 <input
                                     type="email"
                                     placeholder="Email Address"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                    className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-black border border-blue-200 dark:border-blue-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200"
                                     required
                                 />
                             </div>
 
                             <div className="relative">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
                                 <input
                                     type="tel"
                                     placeholder="Phone Number"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                    className="w-full pl-12 pr-4 py-3 bg-white/80 dark:bg-black border border-blue-200 dark:border-blue-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200"
                                     required
                                 />
                             </div>
 
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Password (min. 6 characters)"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-[#2a303c] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                    className="w-full pl-12 pr-12 py-3 bg-white/80 dark:bg-black border border-blue-200 dark:border-blue-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-200"
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600 dark:hover:text-blue-300"
                                 >
                                     {showPassword ? (
                                         <EyeOff className="w-5 h-5" />
@@ -310,7 +392,19 @@ export default function SignUpPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-xl font-extrabold transition-all duration-200 flex items-center justify-center space-x-2 shadow-xl text-lg focus:ring-2 focus:ring-blue-400 relative overflow-hidden"
+                                style={{ position: 'relative' }}
+                                onMouseDown={e => {
+                                    const btn = e.currentTarget;
+                                    const ripple = document.createElement('span');
+                                    ripple.className = 'absolute bg-white/30 rounded-full pointer-events-none animate-ripple';
+                                    ripple.style.left = `${e.nativeEvent.offsetX}px`;
+                                    ripple.style.top = `${e.nativeEvent.offsetY}px`;
+                                    ripple.style.width = ripple.style.height = '100px';
+                                    ripple.style.transform = 'translate(-50%, -50%)';
+                                    btn.appendChild(ripple);
+                                    setTimeout(() => ripple.remove(), 600);
+                                }}
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -322,11 +416,11 @@ export default function SignUpPage() {
                                 )}
                             </button>
 
-                            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+                            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4 font-medium">
                                 Already have an account?{" "}
                                 <Link
                                     href="/login"
-                                    className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium"
+                                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold"
                                 >
                                     Sign in
                                 </Link>

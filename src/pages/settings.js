@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { uploadProfileImage } from "@/lib/firebase/upload";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Sun, Moon, User, Shield, Settings, Eye, Lock, Mail, UserCircle, Palette, Monitor, Smartphone } from "lucide-react";
+import { Sun, Moon, User, Shield, Settings, Eye, Lock, Mail, UserCircle, Palette, Monitor, Smartphone, Pencil } from "lucide-react";
 import { useTheme } from "@/context/Theme.context";
 import { toast } from "sonner";
 import { useAuth } from "@/context/Auth.context";
@@ -29,6 +30,9 @@ export default function SettingsPage() {
     joinDate: "",
     lastLogin: "",
   });
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -62,17 +66,59 @@ export default function SettingsPage() {
   };
 
   const handleProfileUpdate = async () => {
+    if (isLoading) return;
     setIsLoading(true);
+    let avatarUrl = formData.avatar;
     try {
-      await updateUserProfile({
+      if (avatarFile && user?.uid) {
+        console.log('Uploading avatar...');
+        avatarUrl = await uploadProfileImage(avatarFile, user.uid);
+        console.log('Avatar uploaded:', avatarUrl);
+      }
+      if (!avatarUrl) {
+        throw new Error('Avatar URL is empty after upload.');
+      }
+      // Only send fields that are actually updatable
+      const updatePayload = {
         name: formData.name,
-        email: formData.email,
-      });
+        avatar: avatarUrl,
+        photoURL: avatarUrl,
+      };
+      // Only include email if it is different and updatable
+      if (formData.email && formData.email !== user.email) {
+        updatePayload.email = formData.email;
+      }
+      console.log('Updating user profile with:', updatePayload);
+      await updateUserProfile(updatePayload);
+      setFormData(prev => ({ ...prev, avatar: avatarUrl }));
       toast.success("Profile updated successfully!");
     } catch (error) {
-      toast.error("Failed to update profile");
+      console.error('Profile update error:', error);
+      toast.error("Failed to update profile: " + (error?.message || error));
+      alert('Profile update error: ' + (error?.message || error));
+    } finally {
+      setAvatarFile(null);
+      setAvatarPreview("");
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  };
+
+  // Removed handleAvatarSave; avatar is only updated on Save Changes
+
+  const handleAvatarEditClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setAvatarPreview(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAppearanceUpdate = (type, value) => {
@@ -100,12 +146,11 @@ export default function SettingsPage() {
 
   return (
     <div
-      className="min-h-screen transition-all duration-300"
-      
+      className="min-h-screen transition-all duration-300 px-2 sm:px-4 md:px-6 lg:px-8"
     >
-      <div className="max-w-7xl mx-auto sm:p-6 lg:p-4">
+      <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8">
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
             <div className="p-3 rounded-xl bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400">
               <Settings className="w-6 h-6" />
             </div>
@@ -121,7 +166,7 @@ export default function SettingsPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
-          <TabsList className="grid w-full h-12 grid-cols-3 lg:w-fit lg:grid-cols-3 bg-white/70 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 backdrop-blur-sm  rounded-xl">
+          <TabsList className="grid w-full h-12 grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:w-fit lg:grid-cols-3 bg-white/70 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 backdrop-blur-sm rounded-xl overflow-x-auto">
           <TabsTrigger 
             value="profile" 
             className="transition-all duration-200 rounded-lg px-4 py-2.5 border-2 border-transparent data-[state=active]:border-[var(--color,_#6366f1)] data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-sm text-black dark:text-white"
@@ -150,16 +195,34 @@ export default function SettingsPage() {
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-              <Card className="lg:col-span-1 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card className="md:col-span-1 lg:col-span-1 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
                 <CardHeader className="text-center pb-4">
-                  <div className="flex justify-center mb-4">
-                    <Avatar className="w-24 h-24 border-4 border-blue-500/20">
-                      <AvatarImage src={formData.avatar} alt={formData.name} />
-                      <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {formData.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
+                  <div className="flex flex-col items-center mb-4 relative group gap-2">
+                    <div className="relative">
+                      <Avatar className="w-24 h-24 border-4 border-blue-500/20">
+                        <AvatarImage src={avatarPreview || formData.avatar} alt={formData.name} />
+                        <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          {formData.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <button
+                        type="button"
+                        onClick={handleAvatarEditClick}
+                        className="absolute bottom-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 shadow transition-opacity opacity-80 group-hover:opacity-100"
+                        title="Edit profile image"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                      />
+                    </div>
+                    {/* Removed Update Profile Picture button; avatar is saved on Save Changes */}
                   </div>
                   <CardTitle className="text-xl text-gray-900 dark:text-white">
                     {formData.name}
@@ -185,7 +248,7 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="lg:col-span-2 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+              <Card className="md:col-span-1 lg:col-span-2 bg-white/70 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <User className="w-5 h-5" />
@@ -197,7 +260,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="name" className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                           <UserCircle className="w-4 h-4" />
@@ -254,8 +317,8 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="p-6 rounded-xl bg-gray-50 dark:bg-gray-700/50 transition-colors">
-                  <div className="flex items-center justify-between">
+                <div className="p-4 sm:p-6 rounded-xl bg-gray-50 dark:bg-gray-700/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       <div className="p-3 rounded-lg bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400">
                         {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -338,7 +401,7 @@ export default function SettingsPage() {
                     <Button 
                       onClick={handlePasswordChange}
                       disabled={isLoading}
-                      className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-6 py-2 transition-all duration-200"
+                      className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-4 sm:px-6 py-2 transition-all duration-200"
                     >
                       {isLoading ? 'Updating...' : 'Update Password'}
                     </Button>

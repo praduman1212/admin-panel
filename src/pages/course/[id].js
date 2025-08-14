@@ -80,6 +80,7 @@ const CourseDetails = () => {
   const quizzes = getField(courseData, ['course-quizzes', 'quizzes'], '0');
   const thumbnailUrl = getField(courseData, ['course-thumbnailUrl', 'thumbnailUrl', 'thumbnail'], '');
   const previewLink = getField(courseData, ['preview-link', 'preview_link'], '');
+  const videoLink = getField(courseData, ['video-link', 'video_link'], '');
 
   const handleShareClick = () => {
     setShowShare((prev) => !prev);
@@ -95,6 +96,16 @@ const CourseDetails = () => {
       // Optionally show error
     }
   };
+
+  // Helper to extract Google Drive file ID
+function getDriveId(url) {
+  // Handles both /file/d/ID and id=ID
+  const fileIdMatch = url.match(/\/file\/d\/([\w-]+)/);
+  if (fileIdMatch && fileIdMatch[1]) return fileIdMatch[1];
+  const idParamMatch = url.match(/[?&]id=([\w-]+)/);
+  if (idParamMatch && idParamMatch[1]) return idParamMatch[1];
+  return '';
+}
 
   if (loading) {
     return (
@@ -171,13 +182,54 @@ const CourseDetails = () => {
 
               <div className="p-8">
                 <div className="flex items-start justify-between mb-6">
-                  <div className="flex-1">
+                <div className="flex-1">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 capitalize">
                       {title}
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                       {description}
                     </p>
+                    {videoLink && (
+                      <div className="mt-4">
+                        {(videoLink.includes('youtube.com') || videoLink.includes('youtu.be')) ? (
+                          <div className="aspect-video w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                            <iframe
+                              src={
+                                videoLink.includes('youtube.com')
+                                  ? videoLink.replace('watch?v=', 'embed/')
+                                  : videoLink.includes('youtu.be')
+                                    ? `https://www.youtube.com/embed/${videoLink.split('youtu.be/')[1]}`
+                                    : videoLink
+                              }
+                              title="Course Video"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80"
+                            ></iframe>
+                          </div>
+                        ) : videoLink.includes('drive.google.com') ? (
+                          <div className="aspect-video w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                            <iframe
+                              src={`https://drive.google.com/file/d/${getDriveId(videoLink)}/preview`}
+                              title="Course Video"
+                              allow="autoplay; encrypted-media"
+                              allowFullScreen
+                              className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80"
+                            ></iframe>
+                          </div>
+                        ) : (
+                          <a
+                            href={videoLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block px-4 py-2 text-sm font-medium bg-blue-100 text-blue-700 rounded hover:underline"
+                          >
+                            Watch Video
+                          </a>
+                        )}
+                      </div>
+
+                    )}
                   </div>
                   <div className="flex items-center space-x-3 ml-6">
                     <button

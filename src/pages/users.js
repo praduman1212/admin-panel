@@ -32,24 +32,31 @@ export default function UsersPage() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
   
+    // Make fetchUsers accessible for bulk actions
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const users = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setData(users);
+      } catch (error) {
+        setData([]);
+      }
+      setLoading(false);
+    };
     useEffect(() => {
-      const fetchUsers = async () => {
-        setLoading(true);
-        try {
-          const querySnapshot = await getDocs(collection(db, "users"));
-          const users = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          console.log(users);
-          setData(users);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-          setData([]);
-        }
-        setLoading(false);
-      };
       fetchUsers();
+      // Listen for visibility change to reload users after editing
+      const handleVisibility = () => {
+        if (document.visibilityState === 'visible') {
+          fetchUsers();
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibility);
+      return () => document.removeEventListener('visibilitychange', handleVisibility);
     }, []);
   
     const columns = [
@@ -77,11 +84,13 @@ export default function UsersPage() {
         header: ({ column }) => (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => column.toggleSorting()}
             className="h-8 p-0 hover:bg-transparent font-medium text-gray-500 dark:text-gray-400"
           >
             Name
             <ArrowUpDown className="ml-2 h-3 w-3" />
+            {column.getIsSorted() === "asc" && <span className="ml-1">▲</span>}
+            {column.getIsSorted() === "desc" && <span className="ml-1">▼</span>}
           </Button>
         ),
         cell: ({ row }) => (
@@ -149,11 +158,13 @@ export default function UsersPage() {
         header: ({ column }) => (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => column.toggleSorting()}
             className="h-8 p-0 hover:bg-transparent font-medium text-gray-500 dark:text-gray-400"
           >
             Joined
             <ArrowUpDown className="ml-2 h-3 w-3" />
+            {column.getIsSorted() === "asc" && <span className="ml-1">▲</span>}
+            {column.getIsSorted() === "desc" && <span className="ml-1">▼</span>}
           </Button>
         ),
         cell: ({ row }) => (
@@ -169,8 +180,57 @@ export default function UsersPage() {
       {
         id: "actions",
         cell: ({ row }) => {
-          const user = row.original
-
+          const user = row.original;
+          // Handler functions
+          const handleCopyId = async () => {
+            try {
+              await navigator.clipboard.writeText(user.id);
+              if (window?.toast) {
+                window.toast.success('User ID copied!');
+              } else {
+                // fallback
+                alert('User ID copied!');
+              }
+            } catch {
+              alert('Failed to copy User ID');
+            }
+          };
+          const handleViewProfile = () => {
+            window.open(`/profile/${user.id}`, '_blank');
+          };
+          const handleEditUser = () => {
+            // Open edit user in a modal instead of new tab for better UX
+            if (window?.showEditUserModal) {
+              window.showEditUserModal(user, async (updatedUser) => {
+                // Save all changes to Firestore
+                try {
+                  const { doc, updateDoc } = await import('firebase/firestore');
+                  await updateDoc(doc(db, 'users', user.id), updatedUser);
+                  if (window?.toast) {
+                    window.toast.success('User updated successfully!');
+                  } else {
+                    alert('User updated successfully!');
+                  }
+                  // Reload users list
+                  if (typeof fetchUsers === 'function') fetchUsers();
+                } catch (err) {
+                  if (window?.toast) {
+                    window.toast.error('Failed to update user');
+                  } else {
+                    alert('Failed to update user');
+                  }
+                }
+              });
+            } else {
+              window.open(`/edit-user/${user.id}`, '_blank');
+            }
+          };
+          const handleToggleStatus = () => {
+            alert(`${user.status === "active" ? "Deactivated" : "Activated"} user: ${user.name}`);
+          };
+          const handleViewProgress = () => {
+            window.open(`/progress/${user.id}`, '_blank');
+          };
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -179,21 +239,21 @@ export default function UsersPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.id)}>
+                <DropdownMenuItem onClick={handleCopyId}>
                   Copy ID
                 </DropdownMenuItem>
-                <DropdownMenuItem>View Profile</DropdownMenuItem>
-                <DropdownMenuItem>Edit User</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleViewProfile}>View Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleEditUser}>Edit User</DropdownMenuItem>
                 {user.role === "Student" && (
-                  <DropdownMenuItem>View Progress</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleViewProgress}>View Progress</DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className={user.status === "active" ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
+                <DropdownMenuItem onClick={handleToggleStatus} className={user.status === "active" ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
                   {user.status === "active" ? "Deactivate" : "Activate"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )
+          );
         },
       },
     ]
@@ -223,99 +283,121 @@ export default function UsersPage() {
     }
 
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto p-2">
+      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200 px-2 sm:px-4">
+        <div className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your team members and students</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Manage your team members and students</p>
           </div>
-  
-          {/* Actions Bar */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6 shadow-sm">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4" />
-                  <Input
-                    placeholder="Search users..."
-                    value={globalFilter ?? ""}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="pl-10 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                  />
-                </div>
-                
-                {Object.keys(rowSelection).length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {Object.keys(rowSelection).length} selected
-                    </span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                      Bulk Actions
-                    </Button>
-                  </div>
-                )}
-              </div>
+
+          {/* Bulk Actions Bar */}
+          {table.getSelectedRowModel().rows.length > 0 && (
+            <div className="flex items-center gap-3 mb-4 p-3 bg-blue-100 dark:bg-blue-900/40 rounded-lg border border-blue-300 dark:border-blue-700 shadow-lg transition-all">
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {table.getSelectedRowModel().rows.length} selected
+              </span>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={async () => {
+                  // Bulk delete selected users
+                  if (!window.confirm('Are you sure you want to delete selected users?')) return;
+                  try {
+                    const { doc, deleteDoc } = await import('firebase/firestore');
+                    const selectedUserIds = table.getSelectedRowModel().rows.map(row => row.original.id);
+                    await Promise.all(
+                      selectedUserIds.map(userId => deleteDoc(doc(db, 'users', userId)))
+                    );
+                    if (window?.toast) {
+                      window.toast.success('Selected users deleted!');
+                    } else {
+                      alert('Selected users deleted!');
+                    }
+                    setRowSelection({});
+                    fetchUsers();
+                  } catch (err) {
+                    if (window?.toast) {
+                      window.toast.error('Failed to delete users');
+                    } else {
+                      alert('Failed to delete users');
+                    }
+                  }
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  // Show details for selected users in a modal
+                  const selectedUsers = table.getSelectedRowModel().rows.map(row => row.original).filter(Boolean);
+                  if (window?.showUsersDetailsModal) {
+                    window.showUsersDetailsModal(selectedUsers);
+                  } else {
+                    // fallback: alert with JSON
+                    alert(selectedUsers.map(u => `${u.name} (${u.email})`).join('\n'));
+                  }
+                }}
+              >
+                View Details
+              </Button>
             </div>
-          </div>
+          )}
   
-          {/* Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-900/50">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <th key={header.id} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </th>
-                      ))}
-                    </tr>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs sm:text-sm">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
                   ))}
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <tr
-                        key={row.id}
-                        className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                          row.getIsSelected() ? "bg-blue-50/50 dark:bg-blue-900/20" : ""
-                        }`}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={columns.length} className="px-6 py-12 text-center">
-                        <div className="flex flex-col items-center">
-                          <div className="text-gray-400 dark:text-gray-500 mb-2">
-                            <Search className="h-8 w-8" />
-                          </div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">No users found</p>
-                        </div>
+                </tr>
+              ))}
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
+                      row.getIsSelected() ? "bg-blue-50/50 dark:bg-blue-900/20" : ""
+                    }`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center">
+                      <div className="text-gray-400 dark:text-gray-500 mb-2">
+                        <Search className="h-8 w-8" />
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">No users found</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
   
           {/* Pagination */}
-          <div className="flex items-center justify-between pt-6">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between pt-6 gap-3">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Showing {table.getRowModel().rows.length} of {data.length} users
               {Object.keys(rowSelection).length > 0 && (
                 <span className="ml-2 text-blue-600 dark:text-blue-400 font-medium">

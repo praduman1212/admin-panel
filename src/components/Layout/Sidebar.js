@@ -123,7 +123,7 @@ const Sidebar = () => {
                     </div>
                 </div>
             </aside>
-            {/* Overlay for mobile when sidebar is open */}
+           
             {open && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-30 z-20 sm:hidden"

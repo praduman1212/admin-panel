@@ -27,7 +27,7 @@ const MainLayout = ({ children }) => {
            
             <Navbar />
             <div className="flex flex-col sm:flex-row h-screen pt-16">
-                {/* Sidebar - Fixed at left */}
+               
                 <Sidebar />
                 {/* Main Content Area - Responsive & Scrollable */}
                 <main className="flex-1 overflow-auto w-full ml-0 sm:ml-64 p-2 sm:p-4 md:p-6">

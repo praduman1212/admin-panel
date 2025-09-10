@@ -9,7 +9,6 @@ const MainLayout = ({ children }) => {
     const { isLoading, isAuthenticated } = useAuth();
     const router = useRouter();
 
-    // Show loading state
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">

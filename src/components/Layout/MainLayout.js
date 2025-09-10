@@ -18,7 +18,6 @@ const MainLayout = ({ children }) => {
         );
     }
 
-    // Redirect to login if not authenticated
     if (!isAuthenticated && typeof window !== 'undefined') {
         router.push('/login');
         return null;

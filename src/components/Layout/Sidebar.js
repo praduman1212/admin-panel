@@ -43,7 +43,7 @@ const Sidebar = () => {
 
     return (
         <>
-            {/* Mobile sidebar toggle button */}
+            
             <button
                 className="fixed left-2 top-20 z-40 flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg sm:hidden"
                 onClick={() => setOpen((v) => !v)}

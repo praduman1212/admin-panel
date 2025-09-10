@@ -25,7 +25,7 @@ const MainLayout = ({ children }) => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-[#1a1f2b]">
-            {/* Navbar - Fixed at top */}
+           
             <Navbar />
             <div className="flex flex-col sm:flex-row h-screen pt-16">
                 {/* Sidebar - Fixed at left */}

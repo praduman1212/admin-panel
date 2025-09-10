@@ -39,7 +39,6 @@ const Sidebar = () => {
 
     const isActive = (path) => router.pathname === path;
 
-    // Responsive sidebar state
     const [open, setOpen] = React.useState(false);
 
     return (

@@ -55,7 +55,7 @@ const Sidebar = () => {
                 </svg>
             </button>
 
-            {/* Sidebar */}
+       
             <aside
                 className={`fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-30 transition-transform duration-300 transform
                 ${open ? 'translate-x-0' : '-translate-x-full'}
